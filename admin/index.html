@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Softwez Admin</title>
+    <meta name="description" content="Softwez Admin Panel">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="admin-sidebar">
+
+        <div class="admin-logo">
+            Soft<span>wez</span>
+        </div>
+
+        <div class="admin-label">ADMIN PANEL</div>
+
+        <nav class="admin-nav">
+
+            <button class="nav-item active" data-section="dashboard">
+                <span>▦</span>
+                Dashboard
+            </button>
+
+            <button class="nav-item" data-section="tools">
+                <span>◈</span>
+                Tools
+            </button>
+
+            <button class="nav-item" data-section="categories">
+                <span>☷</span>
+                Categories
+            </button>
+
+            <button class="nav-item" data-section="sponsored">
+                <span>★</span>
+                Sponsored
+            </button>
+
+            <button class="nav-item" data-section="affiliate">
+                <span>↗</span>
+                Affiliate
+            </button>
+
+            <button class="nav-item" data-section="ads">
+                <span>▣</span>
+                Ad Network
+            </button>
+
+        </nav>
+
+        <div class="sidebar-bottom">
+            <a href="../index.html" target="_blank">
+                View Website ↗
+            </a>
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN AREA -->
+    <main class="admin-main">
+
+        <!-- TOPBAR -->
+        <header class="admin-topbar">
+
+            <div>
+                <div class="page-title" id="pageTitle">Dashboard</div>
+                <div class="page-subtitle">
+                    Manage your Softwez directory
+                </div>
+            </div>
+
+            <div class="admin-status">
+                <span class="status-dot"></span>
+                Admin
+            </div>
+
+        </header>
+
+
+        <!-- CONTENT -->
+        <div class="admin-content">
+
+
+            <!-- ========================= -->
+            <!-- DASHBOARD -->
+            <!-- ========================= -->
+
+            <section class="admin-section active" id="dashboard">
+
+                <div class="section-heading">
+                    <div>
+                        <h1>Dashboard</h1>
+                        <p>Overview of your Softwez directory.</p>
+                    </div>
+                </div>
+
+
+                <div class="stats-grid">
+
+                    <div class="stat-card">
+                        <div class="stat-label">Total Tools</div>
+                        <div class="stat-value" id="totalTools">0</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-label">Categories</div>
+                        <div class="stat-value" id="totalCategories">0</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-label">Sponsored</div>
+                        <div class="stat-value" id="totalSponsored">0</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-label">Affiliate Tools</div>
+                        <div class="stat-value" id="totalAffiliate">0</div>
+                    </div>
+
+                </div>
+
+
+                <div class="dashboard-card">
+
+                    <div class="card-header">
+                        <div>
+                            <h2>Quick Actions</h2>
+                            <p>Manage your directory.</p>
+                        </div>
+                    </div>
+
+                    <div class="quick-actions">
+
+                        <button class="quick-action" data-go="tools">
+                            <span>＋</span>
+                            <strong>Add Tool</strong>
+                            <small>Add a new resource</small>
+                        </button>
+
+                        <button class="quick-action" data-go="categories">
+                            <span>☷</span>
+                            <strong>Categories</strong>
+                            <small>Manage categories</small>
+                        </button>
+
+                        <button class="quick-action" data-go="sponsored">
+                            <span>★</span>
+                            <strong>Sponsored</strong>
+                            <small>Manage sponsored tools</small>
+                        </button>
+
+                        <button class="quick-action" data-go="ads">
+                            <span>▣</span>
+                            <strong>Ad Network</strong>
+                            <small>Manage advertisements</small>
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- ========================= -->
+            <!-- TOOLS -->
+            <!-- ========================= -->
+
+            <section class="admin-section" id="tools">
+
+                <div class="section-heading">
+
+                    <div>
+                        <h1>Tools</h1>
+                        <p>Add and manage resources listed on Softwez.</p>
+                    </div>
+
+                    <button class="primary-button" id="addToolButton">
+                        + Add Tool
+                    </button>
+
+                </div>
+
+
+                <!-- ADD TOOL FORM -->
+
+                <div class="form-card" id="toolFormCard">
+
+                    <div class="card-header">
+
+                        <div>
+                            <h2>Add New Tool</h2>
+                            <p>Add a resource to your directory.</p>
+                        </div>
+
+                    </div>
+
+
+                    <form id="toolForm">
+
+                        <div class="form-grid">
+
+                            <div class="form-group full">
+
+                                <label for="toolName">
+                                    Tool Name
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="toolName"
+                                    placeholder="e.g. Google Colab"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <div class="form-group full">
+
+                                <label for="toolDescription">
+                                    Description
+                                </label>
+
+                                <textarea
+                                    id="toolDescription"
+                                    rows="4"
+                                    placeholder="Short description of the tool..."
+                                    required
+                                ></textarea>
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label for="toolLink">
+                                    Link
+                                </label>
+
+                                <input
+                                    type="url"
+                                    id="toolLink"
+                                    placeholder="https://example.com"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label for="toolCategory">
+                                    Category
+                                </label>
+
+                                <select id="toolCategory" required>
+
+                                    <option value="">
+                                        Select category
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="form-actions">
+
+                            <button
+                                type="button"
+                                class="secondary-button"
+                                id="cancelToolButton"
+                            >
+                                Cancel
+                            </button>
+
+                            <button
+                                type="submit"
+                                class="primary-button"
+                            >
+                                Add Tool
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+
+                <!-- TOOL LIST -->
+
+                <div class="table-card">
+
+                    <div class="card-header">
+
+                        <div>
+                            <h2>All Tools</h2>
+                            <p>Manage your existing resources.</p>
+                        </div>
+
+                        <input
+                            type="search"
+                            class="table-search"
+                            id="toolSearch"
+                            placeholder="Search tools..."
+                        >
+
+                    </div>
+
+
+                    <div class="table-wrapper">
+
+                        <table>
+
+                            <thead>
+
+                                <tr>
+                                    <th>Tool</th>
+                                    <th>Category</th>
+                                    <th>Link</th>
+                                    <th>Actions</th>
+                                </tr>
+
+                            </thead>
+
+                            <tbody id="toolsTableBody">
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- ========================= -->
+            <!-- CATEGORIES -->
+            <!-- ========================= -->
+
+            <section class="admin-section" id="categories">
+
+                <div class="section-heading">
+
+                    <div>
+                        <h1>Categories</h1>
+                        <p>Create and manage Softwez categories.</p>
+                    </div>
+
+                </div>
+
+
+                <div class="form-card">
+
+                    <div class="card-header">
+
+                        <div>
+                            <h2>Add Category</h2>
+                            <p>Create a new category for your directory.</p>
+                        </div>
+
+                    </div>
+
+
+                    <form id="categoryForm">
+
+                        <div class="inline-form">
+
+                            <input
+                                type="text"
+                                id="categoryName"
+                                placeholder="Category name"
+                                required
+                            >
+
+                            <button
+                                type="submit"
+                                class="primary-button"
+                            >
+                                + Add Category
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+
+                <div class="category-admin-list" id="categoryAdminList">
+                </div>
+
+            </section>
+
+
+
+            <!-- ========================= -->
+            <!-- SPONSORED -->
+            <!-- ========================= -->
+
+            <section class="admin-section" id="sponsored">
+
+                <div class="section-heading">
+
+                    <div>
+                        <h1>Sponsored Tools</h1>
+                        <p>Manage sponsored tool placements.</p>
+                    </div>
+
+                </div>
+
+
+                <div class="info-card">
+
+                    <div class="info-icon">★</div>
+
+                    <div>
+                        <h3>Sponsored Tool Placement</h3>
+
+                        <p>
+                            Select a tool and mark it as sponsored.
+                            Sponsored resources will be displayed in
+                            designated sponsored positions on Softwez.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div class="table-card">
+
+                    <div class="card-header">
+
+                        <div>
+                            <h2>Sponsored Tools</h2>
+                            <p>Currently sponsored resources.</p>
+                        </div>
+
+                    </div>
+
+                    <div id="sponsoredList">
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- ========================= -->
+            <!-- AFFILIATE -->
+            <!-- ========================= -->
+
+            <section class="admin-section" id="affiliate">
+
+                <div class="section-heading">
+
+                    <div>
+                        <h1>Affiliate</h1>
+                        <p>Manage affiliate links for your tools.</p>
+                    </div>
+
+                </div>
+
+
+                <div class="form-card">
+
+                    <div class="card-header">
+
+                        <div>
+                            <h2>Affiliate Link</h2>
+                            <p>
+                                Add or update an affiliate URL for a tool.
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <form id="affiliateForm">
+
+                        <div class="form-grid">
+
+                            <div class="form-group">
+
+                                <label for="affiliateTool">
+                                    Tool
+                                </label>
+
+                                <select id="affiliateTool">
+
+                                    <option value="">
+                                        Select tool
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label for="affiliateLink">
+                                    Affiliate Link
+                                </label>
+
+                                <input
+                                    type="url"
+                                    id="affiliateLink"
+                                    placeholder="https://example.com/ref/..."
+                                >
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="form-actions">
+
+                            <button
+                                type="submit"
+                                class="primary-button"
+                            >
+                                Save Affiliate Link
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+
+                <div class="table-card">
+
+                    <div class="card-header">
+
+                        <div>
+                            <h2>Affiliate Tools</h2>
+                            <p>Tools currently using affiliate links.</p>
+                        </div>
+
+                    </div>
+
+                    <div id="affiliateList">
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- ========================= -->
+            <!-- AD NETWORK -->
+            <!-- ========================= -->
+
+            <section class="admin-section" id="ads">
+
+                <div class="section-heading">
+
+                    <div>
+                        <h1>Ad Network</h1>
+                        <p>Manage your advertising network settings.</p>
+                    </div>
+
+                </div>
+
+
+                <div class="form-card">
+
+                    <div class="card-header">
+
+                        <div>
+                            <h2>Add Ad Network</h2>
+                            <p>
+                                Connect an advertising network to Softwez.
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <form id="adNetworkForm">
+
+                        <div class="form-grid">
+
+                            <div class="form-group">
+
+                                <label for="adNetworkName">
+                                    Network Name
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="adNetworkName"
+                                    placeholder="e.g. Google AdSense"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label for="adNetworkCode">
+                                    Ad Code
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="adNetworkCode"
+                                    placeholder="Paste ad code / ID"
+                                    required
+                                >
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="form-actions">
+
+                            <button
+                                type="submit"
+                                class="primary-button"
+                            >
+                                Save Ad Network
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+
+                <div class="table-card">
+
+                    <div class="card-header">
+
+                        <div>
+                            <h2>Ad Networks</h2>
+                            <p>Your connected advertising networks.</p>
+                        </div>
+
+                    </div>
+
+                    <div id="adNetworkList">
+                    </div>
+
+                </div>
+
+            </section>
+
+
+        </div>
+
+    </main>
+
+
+    <!-- JAVASCRIPT -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../supabase-config.js"></script>
+<script src="script.js?v=2" defer></script>
+
+</body>
+</html>

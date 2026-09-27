@@ -1,0 +1,840 @@
+/* =========================================================
+   SOFTWEZ — STYLE.CSS
+========================================================= */
+
+:root {
+    --bg: #f6f6f3;
+    --white: #ffffff;
+    --text: #171717;
+    --muted: #777;
+    --border: #e3e3dd;
+    --soft: #eeeeea;
+    --accent: #e6533d;
+
+    --sponsor-bg: #fffdf4;
+    --sponsor-border: #e4d8b6;
+}
+
+
+/* =========================================================
+   RESET
+========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Arial,
+        sans-serif;
+}
+
+button,
+input {
+    font: inherit;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+header {
+    height: 62px;
+
+    border-bottom: 1px solid var(--border);
+
+    position: sticky;
+    top: 0;
+
+    background: rgba(246, 246, 243, 0.96);
+
+    backdrop-filter: blur(8px);
+
+    z-index: 100;
+}
+
+.header-inner {
+    max-width: 1180px;
+    height: 100%;
+
+    margin: 0 auto;
+    padding: 0 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo {
+    font-size: 21px;
+    font-weight: 900;
+    letter-spacing: -1px;
+}
+
+.logo span {
+    color: var(--accent);
+}
+
+.nav {
+    display: flex;
+    gap: 22px;
+
+    font-size: 12px;
+    color: #666;
+}
+
+.nav a:hover {
+    color: #111;
+}
+
+.submit-btn {
+    border: 0;
+
+    background: #111;
+    color: #fff;
+
+    padding: 8px 13px;
+
+    border-radius: 6px;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+.submit-btn:hover {
+    opacity: .85;
+}
+
+
+/* =========================================================
+   MAIN
+========================================================= */
+
+.container {
+    max-width: 1180px;
+
+    margin: 0 auto;
+
+    padding: 0 20px;
+}
+
+
+/* =========================================================
+   HERO
+========================================================= */
+
+.hero {
+    text-align: center;
+
+    padding: 35px 0 42px;
+}
+
+.eyebrow {
+    color: var(--accent);
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+    letter-spacing: 1.4px;
+
+    text-transform: uppercase;
+
+    margin-bottom: 12px;
+}
+
+.hero h1 {
+    max-width: 620px;
+
+    margin: 0 auto 15px;
+
+    font-size: 52px;
+
+    line-height: .98;
+
+    letter-spacing: -3px;
+
+    font-weight: 900;
+}
+
+.hero p {
+    max-width: 620px;
+
+    margin: 0 auto 24px;
+
+    color: var(--muted);
+
+    font-size: 15px;
+
+    line-height: 1.55;
+}
+
+
+/* =========================================================
+   SEARCH
+   EXACTLY CENTERED
+========================================================= */
+
+.search-box {
+    width: 680px;
+    max-width: 100%;
+
+    margin: 0 auto;
+
+    position: relative;
+}
+
+.search-box input {
+    width: 100%;
+    height: 50px;
+
+    border: 1px solid #d6d6d0;
+
+    border-radius: 7px;
+
+    background: #fff;
+
+    padding: 0 42px 0 15px;
+
+    outline: none;
+
+    font-size: 14px;
+
+    color: #222;
+}
+
+.search-box input::placeholder {
+    color: #999;
+}
+
+.search-box input:focus {
+    border-color: #999;
+}
+
+.search-icon {
+    position: absolute;
+
+    right: 15px;
+    top: 13px;
+
+    color: #777;
+
+    font-size: 17px;
+
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   DIRECTORY
+========================================================= */
+
+/*
+    IMPORTANT
+
+    The resource list is NOT centered together with
+    the sidebar.
+
+    The resource list gets its own 730px centered column.
+
+    This is what makes the layout look like the screenshot.
+*/
+
+.directory {
+    position: relative;
+
+    width: 100%;
+
+    display: block;
+}
+
+
+/* =========================================================
+   SIDEBAR
+========================================================= */
+
+/*
+    Sidebar stays on the left independently.
+
+    It does NOT affect the horizontal position
+    of the resource list.
+*/
+
+.sidebar {
+    position: absolute;
+
+    left: 0;
+
+    top: 0;
+
+    width: 190px;
+
+    max-height: calc(100vh - 100px);
+
+    overflow-y: auto;
+
+    padding-right: 5px;
+
+    z-index: 2;
+}
+
+.sidebar::-webkit-scrollbar {
+    width: 4px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background: #d5d5cf;
+
+    border-radius: 10px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sidebar-title {
+    font-size: 11px;
+
+    font-weight: 900;
+
+    text-transform: uppercase;
+
+    letter-spacing: 1px;
+
+    color: #888;
+
+    padding: 0 8px 10px;
+
+    border-bottom: 1px solid var(--border);
+}
+
+
+/* =========================================================
+   CATEGORY
+========================================================= */
+
+.category-block {
+    border-bottom: 1px solid #ecece7;
+}
+
+.category-button {
+    width: 100%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    border: 0;
+
+    background: transparent;
+
+    color: #555;
+
+    padding: 9px 8px;
+
+    text-align: left;
+
+    cursor: pointer;
+
+    font-size: 12px;
+
+    border-radius: 3px;
+}
+
+.category-button:hover {
+    background: #fff;
+
+    color: #111;
+}
+
+.category-button.active {
+    background: #fff;
+
+    color: #111;
+
+    font-weight: 800;
+
+    border-left: 2px solid var(--accent);
+}
+
+
+/* =========================================================
+   CHEVRON
+========================================================= */
+
+.chevron {
+    color: #999;
+
+    font-size: 11px;
+
+    transition: transform .15s ease;
+}
+
+.category-block.open .chevron {
+    transform: rotate(90deg);
+}
+
+
+/* =========================================================
+   SUBCATEGORIES
+========================================================= */
+
+.subcategories {
+    display: none;
+
+    padding: 0 0 7px 12px;
+}
+
+.category-block.open .subcategories {
+    display: block;
+}
+
+.subcategory {
+    display: block;
+
+    width: 100%;
+
+    border: 0;
+
+    background: transparent;
+
+    color: #777;
+
+    text-align: left;
+
+    padding: 6px 8px;
+
+    border-radius: 4px;
+
+    cursor: pointer;
+
+    font-size: 11px;
+}
+
+.subcategory:hover {
+    background: #fff;
+
+    color: #111;
+}
+
+.subcategory.active {
+    background: #fff;
+
+    color: #111;
+
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   RESOURCE CONTENT
+   THIS IS THE IMPORTANT PART
+========================================================= */
+
+.content {
+    width: 730px;
+    max-width: 100%;
+
+    margin-left: auto;
+    margin-right: auto;
+
+    min-width: 0;
+}
+
+
+/* =========================================================
+   CONTENT HEADER
+========================================================= */
+
+.content-header {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin: 0 0 7px;
+
+    padding: 0 7px 10px;
+
+    border-bottom: 2px solid #222;
+}
+
+.content-title {
+    font-size: 15px;
+
+    font-weight: 800;
+}
+
+.resource-count {
+    font-size: 11px;
+
+    color: #888;
+}
+
+
+/* =========================================================
+   RESOURCE
+========================================================= */
+
+.resource {
+    display: block;
+
+    padding: 16px 8px;
+
+    border-bottom: 1px solid var(--border);
+
+    transition:
+        background .12s ease,
+        padding .12s ease;
+}
+
+.resource:hover {
+    background: #fff;
+
+    padding-left: 12px;
+    padding-right: 12px;
+}
+
+
+/* =========================================================
+   RESOURCE TITLE
+========================================================= */
+
+.resource-title-row {
+    display: flex;
+
+    align-items: center;
+
+    flex-wrap: wrap;
+
+    gap: 9px;
+}
+
+.resource-title {
+    font-size: 15px;
+
+    font-weight: 800;
+}
+
+.resource-domain {
+    color: #999;
+
+    font-size: 10px;
+}
+
+
+/* =========================================================
+   DESCRIPTION
+========================================================= */
+
+.resource-description {
+    color: #707070;
+
+    font-size: 13px;
+
+    line-height: 1.5;
+
+    margin-top: 4px;
+}
+
+
+/* =========================================================
+   TAGS
+========================================================= */
+
+.resource-tags {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 5px;
+
+    margin-top: 8px;
+}
+
+.tag {
+    background: var(--soft);
+
+    color: #777;
+
+    padding: 3px 6px;
+
+    border-radius: 3px;
+
+    font-size: 9px;
+
+    text-transform: uppercase;
+
+    letter-spacing: .4px;
+}
+
+
+/* =========================================================
+   SPONSORED
+========================================================= */
+
+.resource.sponsored {
+    margin: 6px 0;
+
+    padding: 17px 8px;
+
+    border: 1px solid var(--sponsor-border);
+
+    border-radius: 6px;
+
+    background: var(--sponsor-bg);
+}
+
+.resource.sponsored:hover {
+    background: var(--sponsor-bg);
+
+    padding-left: 12px;
+    padding-right: 12px;
+}
+
+.sponsored-label {
+    color: #9b772e;
+
+    font-size: 9px;
+
+    font-weight: 900;
+
+    text-transform: uppercase;
+
+    letter-spacing: .8px;
+
+    margin-bottom: 5px;
+}
+
+
+/* =========================================================
+   LOAD MORE
+========================================================= */
+
+.load-more-container {
+    text-align: center;
+
+    padding: 28px 0;
+}
+
+.load-more {
+    border: 1px solid #d3d3cd;
+
+    background: #fff;
+
+    color: #222;
+
+    border-radius: 7px;
+
+    padding: 10px 20px;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+.load-more:hover {
+    background: #111;
+
+    color: #fff;
+
+    border-color: #111;
+}
+
+
+/* =========================================================
+   EMPTY
+========================================================= */
+
+.empty {
+    display: none;
+
+    text-align: center;
+
+    padding: 55px 20px;
+
+    color: #888;
+
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+footer {
+    width: 730px;
+    max-width: 100%;
+
+    margin: 35px auto 45px;
+
+    padding-top: 18px;
+
+    border-top: 1px solid var(--border);
+
+    display: flex;
+
+    justify-content: space-between;
+
+    color: #999;
+
+    font-size: 10px;
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 1050px) {
+
+    .sidebar {
+        left: 0;
+        width: 165px;
+    }
+
+}
+
+
+/* =========================================================
+   SMALL TABLET
+========================================================= */
+
+@media (max-width: 850px) {
+
+    /*
+        Hide sidebar temporarily so the resource list
+        remains perfectly centered.
+    */
+
+    .sidebar {
+        display: none;
+    }
+
+    .content {
+        width: 730px;
+        max-width: 100%;
+    }
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 700px) {
+
+    .header-inner {
+        padding: 0 15px;
+    }
+
+    .nav {
+        display: none;
+    }
+
+    .container {
+        padding: 0 15px;
+    }
+
+    .hero {
+        padding: 35px 0 32px;
+    }
+
+    .hero h1 {
+        font-size: 42px;
+
+        letter-spacing: -2px;
+    }
+
+    .hero p {
+        font-size: 14px;
+    }
+
+    .search-box {
+        width: 100%;
+    }
+
+    .content {
+        width: 100%;
+    }
+
+    .resource {
+        padding: 15px 5px;
+    }
+
+    .resource:hover {
+        padding-left: 8px;
+        padding-right: 8px;
+    }
+
+    .resource-title {
+        font-size: 14px;
+    }
+
+    .resource-description {
+        font-size: 12px;
+    }
+
+    footer {
+        width: 100%;
+
+        display: block;
+
+        line-height: 2;
+    }
+
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 420px) {
+
+    .hero h1 {
+        font-size: 36px;
+
+        letter-spacing: -1.5px;
+    }
+
+    .hero p {
+        font-size: 13px;
+    }
+
+    .content-title {
+        font-size: 14px;
+    }
+
+    .resource-count {
+        font-size: 10px;
+    }
+
+}

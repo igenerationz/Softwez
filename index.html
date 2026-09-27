@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Softwez — Free Digital Resources</title>
+
+    <meta
+        name="description"
+        content="Discover free software, AI tools, courses, books, design resources, developer tools and more."
+    >
+
+    <!-- Main stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- =========================================================
+         HEADER
+    ========================================================== -->
+
+    <header>
+        <div class="header-inner">
+
+            <a href="#" class="logo">
+                Soft<span>wez</span>
+            </a>
+
+            <nav class="nav">
+                <a href="#discover">Discover</a>
+                <a href="#categories">Categories</a>
+                <a href="#about">About</a>
+            </nav>
+
+            <button
+                type="button"
+                class="submit-btn"
+                onclick="showSubmitMessage()"
+            >
+                + Submit
+            </button>
+
+        </div>
+    </header>
+
+
+    <!-- =========================================================
+         MAIN
+    ========================================================== -->
+
+    <main class="container">
+
+
+        <!-- =====================================================
+             HERO
+        ====================================================== -->
+
+        <section class="hero">
+
+            <div class="eyebrow">
+                THE INTERNET'S FREE SHELF
+            </div>
+
+            <h1>
+                Everything free.<br>
+                In one place.
+            </h1>
+
+            <p>
+                Free software, AI tools, courses, books, datasets,
+                templates, APIs and more — curated into one simple directory.
+            </p>
+
+            <div class="search-box">
+
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="Search free resources..."
+                    autocomplete="off"
+                    aria-label="Search free resources"
+                >
+
+                <span
+                    class="search-icon"
+                    aria-hidden="true"
+                >
+                    ⌕
+                </span>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             DIRECTORY
+        ====================================================== -->
+
+        <div class="directory">
+
+
+            <!-- =================================================
+                 LEFT SIDEBAR
+            ================================================== -->
+
+            <aside
+                class="sidebar"
+                id="categories"
+            >
+
+                <div class="sidebar-title">
+                    Categories
+                </div>
+
+                <div
+                    class="category-list"
+                    id="categoryList"
+                ></div>
+
+            </aside>
+
+
+            <!-- =================================================
+                 RESOURCE CONTENT
+            ================================================== -->
+
+            <section
+                class="content"
+                id="discover"
+            >
+
+                <div class="content-header">
+
+                    <div class="content-title">
+                        Recommended resources
+                    </div>
+
+                    <div
+                        class="resource-count"
+                        id="resourceCount"
+                    ></div>
+
+                </div>
+
+
+                <!-- Resource list -->
+                <div id="resourceList"></div>
+
+
+                <!-- Empty state -->
+                <div
+                    class="empty"
+                    id="emptyMessage"
+                >
+                    No resources found.
+                </div>
+
+
+                <!-- Load more -->
+                <div class="load-more-container">
+
+                    <button
+                        type="button"
+                        class="load-more"
+                        id="loadMoreButton"
+                    >
+                        Load more resources
+                    </button>
+
+                </div>
+
+            </section>
+
+        </div>
+
+
+        <!-- =====================================================
+             FOOTER
+        ====================================================== -->
+
+        <footer id="about">
+
+            <span>
+                <b>Softwez</b> · Free resources, simply listed.
+            </span>
+
+            <span>
+                Community powered
+            </span>
+
+        </footer>
+
+    </main>
+
+
+    <!-- =========================================================
+         MAIN JAVASCRIPT
+         
+         IMPORTANT:
+         All resource data, category data, filtering,
+         search, sponsored placement and load-more logic
+         are now inside script.js.
+    ========================================================== -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<script src="script.js" defer></script>
+
+</body>
+</html>
