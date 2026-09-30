@@ -914,6 +914,22 @@ function renderCategories() {
 
     categoryList.innerHTML = html;
 
+    const sidebar = document.getElementById("categories");
+const sidebarTitle = sidebar?.querySelector(".sidebar-title");
+
+if (sidebarTitle && !sidebarTitle.dataset.mobileBound) {
+
+    sidebarTitle.dataset.mobileBound = "true";
+
+    sidebarTitle.addEventListener("click", () => {
+
+        if (window.innerWidth <= 850) {
+            sidebar.classList.toggle("mobile-category-open");
+        }
+
+    });
+
+}
 
     /* =====================================================
        CATEGORY BUTTON EVENTS
