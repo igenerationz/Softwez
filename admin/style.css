@@ -1453,3 +1453,212 @@ tbody tr:hover {
     }
 
 }
+/* =========================================================
+   ADMIN LOGOUT BUTTON
+========================================================= */
+
+#logoutBtn {
+
+    position: absolute;
+
+    top: 20px;
+    right: 28px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    height: 38px;
+
+    padding: 0 15px;
+
+    border: 1px solid #e1e3e6;
+    border-radius: 9px;
+
+    background: #ffffff;
+    color: #55585d;
+
+    font-family: inherit;
+
+    font-size: 13px;
+    font-weight: 650;
+
+    cursor: pointer;
+
+    transition:
+        background 0.18s ease,
+        border-color 0.18s ease,
+        color 0.18s ease,
+        box-shadow 0.18s ease,
+        transform 0.12s ease;
+
+    z-index: 50;
+}
+
+
+#logoutBtn::before {
+
+    content: "↪";
+
+    display: inline-block;
+
+    margin-right: 7px;
+
+    font-size: 15px;
+    line-height: 1;
+
+    transform: rotate(180deg);
+
+}
+
+
+#logoutBtn:hover {
+
+    background: #fafafa;
+
+    border-color: #cfd2d6;
+
+    color: #1f2022;
+
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.06);
+
+}
+
+
+#logoutBtn:active {
+
+    transform: translateY(1px);
+
+}
+
+
+#logoutBtn:focus-visible {
+
+    outline: none;
+
+    border-color: #111;
+
+    box-shadow:
+        0 0 0 3px rgba(0, 0, 0, 0.08);
+
+}
+
+
+/* MOBILE */
+
+@media (max-width: 700px) {
+
+    #logoutBtn {
+
+        top: 14px;
+        right: 16px;
+
+        height: 36px;
+
+        padding: 0 12px;
+
+        font-size: 12px;
+
+    }
+
+}
+.admin-main {
+    position: relative;
+}
+/* =========================================================
+   LOGOUT BUTTON
+========================================================= */
+
+.admin-main {
+    position: relative;
+}
+
+#logoutBtn {
+    position: absolute;
+
+    top: 18px;
+    right: 28px;
+
+    height: 38px;
+
+    padding: 0 15px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid #e1e5e9;
+    border-radius: 9px;
+
+    background: #ffffff;
+    color: #4b5563;
+
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    z-index: 100;
+
+    transition:
+        background 0.18s ease,
+        border-color 0.18s ease,
+        color 0.18s ease,
+        box-shadow 0.18s ease,
+        transform 0.12s ease;
+}
+
+#logoutBtn::before {
+    content: "↪";
+
+    margin-right: 7px;
+
+    font-size: 15px;
+    line-height: 1;
+
+    transform: rotate(180deg);
+}
+
+#logoutBtn:hover {
+    background: #f8faf9;
+
+    border-color: #cbd1d7;
+
+    color: #111827;
+
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.07);
+}
+
+#logoutBtn:active {
+    transform: translateY(1px);
+}
+
+#logoutBtn:focus-visible {
+    outline: none;
+
+    border-color: #111827;
+
+    box-shadow:
+        0 0 0 3px rgba(17, 24, 39, 0.08);
+}
+
+
+/* MOBILE */
+
+@media (max-width: 800px) {
+
+    #logoutBtn {
+        top: 14px;
+        right: 18px;
+
+        height: 36px;
+
+        padding: 0 12px;
+
+        font-size: 12px;
+    }
+
+}

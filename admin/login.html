@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Softwez — Admin Login</title>
+
+    <meta
+        name="description"
+        content="Secure Softwez administrator login"
+    >
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../supabase-config.js"></script>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #f6f7f9;
+            --card: #ffffff;
+            --text: #17181a;
+            --muted: #74777d;
+            --border: #e5e7eb;
+            --accent: #111111;
+            --accent-hover: #2a2a2a;
+            --danger: #dc2626;
+            --success: #15803d;
+        }
+
+        html,
+        body {
+            width: 100%;
+            min-height: 100%;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 24px;
+
+            background:
+                radial-gradient(
+                    circle at top left,
+                    rgba(0, 0, 0, 0.035),
+                    transparent 35%
+                ),
+                var(--bg);
+
+            color: var(--text);
+
+            font-family:
+                Inter,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                Roboto,
+                Helvetica,
+                Arial,
+                sans-serif;
+        }
+
+        .login-wrapper {
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .login-card {
+            width: 100%;
+
+            background: var(--card);
+
+            border: 1px solid var(--border);
+
+            border-radius: 18px;
+
+            padding: 40px;
+
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.07);
+        }
+
+        /* LOGO */
+
+        .brand {
+            text-align: center;
+            margin-bottom: 34px;
+        }
+
+        .brand-logo {
+            display: inline-flex;
+
+            font-size: 32px;
+            line-height: 1;
+
+            font-weight: 800;
+            letter-spacing: -1.8px;
+
+            color: #111;
+        }
+
+        .brand-logo span {
+            color: #777;
+        }
+
+        .brand-label {
+            margin-top: 10px;
+
+            font-size: 12px;
+            font-weight: 700;
+
+            letter-spacing: 1.8px;
+
+            color: #96999e;
+            text-transform: uppercase;
+        }
+
+        /* HEADER */
+
+        .login-heading {
+            margin-bottom: 7px;
+
+            font-size: 24px;
+            font-weight: 750;
+
+            letter-spacing: -0.6px;
+        }
+
+        .login-description {
+            margin-bottom: 28px;
+
+            font-size: 14px;
+            line-height: 1.6;
+
+            color: var(--muted);
+        }
+
+        /* FORM */
+
+        .field {
+            margin-bottom: 18px;
+        }
+
+        .field label {
+            display: block;
+
+            margin-bottom: 8px;
+
+            font-size: 13px;
+            font-weight: 650;
+
+            color: #383a3e;
+        }
+
+        .field input {
+            width: 100%;
+            height: 48px;
+
+            padding: 0 14px;
+
+            border: 1px solid #dfe1e5;
+            border-radius: 10px;
+
+            background: #fff;
+
+            color: var(--text);
+
+            font-size: 14px;
+
+            outline: none;
+
+            transition:
+                border-color 0.18s ease,
+                box-shadow 0.18s ease,
+                background 0.18s ease;
+        }
+
+        .field input:hover {
+            border-color: #c8cbd0;
+        }
+
+        .field input:focus {
+            border-color: #111;
+
+            box-shadow:
+                0 0 0 3px rgba(0, 0, 0, 0.07);
+        }
+
+        .field input::placeholder {
+            color: #a7a9ad;
+        }
+
+        /* LOGIN BUTTON */
+
+        #loginBtn {
+            width: 100%;
+            height: 48px;
+
+            margin-top: 4px;
+
+            border: 0;
+            border-radius: 10px;
+
+            background: var(--accent);
+            color: #fff;
+
+            font-size: 14px;
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition:
+                background 0.18s ease,
+                transform 0.12s ease,
+                box-shadow 0.18s ease;
+        }
+
+        #loginBtn:hover:not(:disabled) {
+            background: var(--accent-hover);
+
+            box-shadow:
+                0 7px 18px rgba(0, 0, 0, 0.13);
+        }
+
+        #loginBtn:active:not(:disabled) {
+            transform: translateY(1px);
+        }
+
+        #loginBtn:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+        }
+
+        /* MESSAGE */
+
+        #message {
+            min-height: 20px;
+
+            margin-top: 16px;
+
+            text-align: center;
+
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        #message.error {
+            color: var(--danger);
+        }
+
+        #message.success {
+            color: var(--success);
+        }
+
+        /* FOOTER */
+
+        .login-footer {
+            margin-top: 28px;
+            padding-top: 20px;
+
+            border-top: 1px solid #eeeeef;
+
+            text-align: center;
+
+            font-size: 12px;
+            color: #a0a2a6;
+        }
+
+        /* MOBILE */
+
+        @media (max-width: 480px) {
+
+            body {
+                padding: 16px;
+            }
+
+            .login-card {
+                padding: 30px 22px;
+
+                border-radius: 16px;
+            }
+
+            .brand-logo {
+                font-size: 29px;
+            }
+
+            .login-heading {
+                font-size: 22px;
+            }
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="login-wrapper">
+
+        <div class="login-card">
+
+            <div class="brand">
+
+                <div class="brand-logo">
+                    Soft<span>wez</span>
+                </div>
+
+                <div class="brand-label">
+                    Administration
+                </div>
+
+            </div>
+
+
+            <h1 class="login-heading">
+                Welcome back
+            </h1>
+
+            <p class="login-description">
+                Sign in to manage your Softwez directory.
+            </p>
+
+
+            <div class="field">
+
+                <label for="email">
+                    Email address
+                </label>
+
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="admin@example.com"
+                    autocomplete="email"
+                    spellcheck="false"
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="password">
+                    Password
+                </label>
+
+                <input
+                    type="password"
+                    id="password"
+                    placeholder="Enter your password"
+                    autocomplete="current-password"
+                >
+
+            </div>
+
+
+            <button
+                id="loginBtn"
+                type="button"
+            >
+                Login to Admin
+            </button>
+
+
+            <p id="message"></p>
+
+
+            <div class="login-footer">
+                Softwez Admin Panel
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <script src="login.js"></script>
+
+</body>
+
+</html>

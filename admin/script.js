@@ -1,3 +1,46 @@
+// =========================================
+// ADMIN ACCESS PROTECTION
+// =========================================
+
+const ADMIN_EMAIL = "igenerationofficial@gmail.com";
+
+(async () => {
+
+    const {
+        data: {
+            session
+        }
+    } = await supabaseClient.auth.getSession();
+
+
+    // No login
+    if (!session) {
+
+        window.location.replace("login.html");
+
+        return;
+    }
+
+
+    // Logged-in user's email
+    const loggedInEmail =
+        session.user?.email?.toLowerCase();
+
+
+    // Only Admin can access dashboard
+    if (
+        loggedInEmail !==
+        ADMIN_EMAIL.toLowerCase()
+    ) {
+
+        await supabaseClient.auth.signOut();
+
+        window.location.replace("login.html");
+
+        return;
+    }
+
+})();
 const savedAdminSection = localStorage.getItem("softwez_admin_section") || "dashboard";
 let tools = JSON.parse(localStorage.getItem("softwez_tools") || "[]");
 let categories = [];
@@ -135,6 +178,15 @@ if (pageTitle) {
     });
 }
 openSection(savedAdminSection);
+document
+    .getElementById("logoutBtn")
+    ?.addEventListener("click", async () => {
+
+        await supabaseClient.auth.signOut();
+
+        window.location.href = "login.html";
+
+    });
 navItems.forEach(item => {
     item.addEventListener(
         "click",
@@ -4598,3 +4650,39 @@ loadToolsFromSupabase();
 loadAdNetworks();
 loadAffiliateLinks();
 loadPendingSubmissions();
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+const logoutBtn = document.getElementById("logoutBtn");
+
+if (logoutBtn) {
+
+    logoutBtn.addEventListener(
+        "click",
+        async () => {
+
+            logoutBtn.disabled = true;
+            logoutBtn.textContent = "Logging out...";
+
+            try {
+
+                await supabaseClient.auth.signOut();
+
+            } catch (error) {
+
+                console.error(
+                    "Logout error:",
+                    error
+                );
+
+            }
+
+            window.location.replace(
+                "login.html"
+            );
+
+        }
+    );
+
+}
