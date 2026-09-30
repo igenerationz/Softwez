@@ -12,7 +12,10 @@
 
 <body>
 
+    <!-- ========================================= -->
     <!-- SIDEBAR -->
+    <!-- ========================================= -->
+
     <aside class="admin-sidebar">
 
         <div class="admin-logo">
@@ -23,32 +26,72 @@
 
         <nav class="admin-nav">
 
-            <button class="nav-item active" data-section="dashboard">
+            <button
+                type="button"
+                class="nav-item active"
+                data-section="dashboard"
+            >
                 <span>▦</span>
                 Dashboard
             </button>
 
-            <button class="nav-item" data-section="tools">
+            <button
+                type="button"
+                class="nav-item"
+                data-section="tools"
+            >
                 <span>◈</span>
                 Tools
             </button>
 
-            <button class="nav-item" data-section="categories">
+            <button
+                type="button"
+                class="nav-item"
+                data-section="pending-submissions"
+            >
+                <span>◷</span>
+                Pending Submissions
+                <span
+                    class="pending-nav-count"
+                    id="pendingNavCount"
+                    aria-label="Pending submissions count"
+                >
+                    0
+                </span>
+            </button>
+
+            <button
+                type="button"
+                class="nav-item"
+                data-section="categories"
+            >
                 <span>☷</span>
                 Categories
             </button>
 
-            <button class="nav-item" data-section="sponsored">
+            <button
+                type="button"
+                class="nav-item"
+                data-section="sponsored"
+            >
                 <span>★</span>
                 Sponsored
             </button>
 
-            <button class="nav-item" data-section="affiliate">
+            <button
+                type="button"
+                class="nav-item"
+                data-section="affiliate"
+            >
                 <span>↗</span>
                 Affiliate
             </button>
 
-            <button class="nav-item" data-section="ads">
+            <button
+                type="button"
+                class="nav-item"
+                data-section="ads"
+            >
                 <span>▣</span>
                 Ad Network
             </button>
@@ -56,7 +99,11 @@
         </nav>
 
         <div class="sidebar-bottom">
-            <a href="../index.html" target="_blank">
+            <a
+                href="../index.html"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
                 View Website ↗
             </a>
         </div>
@@ -64,14 +111,24 @@
     </aside>
 
 
+    <!-- ========================================= -->
     <!-- MAIN AREA -->
+    <!-- ========================================= -->
+
     <main class="admin-main">
 
         <!-- TOPBAR -->
+
         <header class="admin-topbar">
 
             <div>
-                <div class="page-title" id="pageTitle">Dashboard</div>
+                <div
+                    class="page-title"
+                    id="pageTitle"
+                >
+                    Dashboard
+                </div>
+
                 <div class="page-subtitle">
                     Manage your Softwez directory
                 </div>
@@ -85,82 +142,218 @@
         </header>
 
 
+        <!-- ========================================= -->
         <!-- CONTENT -->
+        <!-- ========================================= -->
+
         <div class="admin-content">
 
 
-            <!-- ========================= -->
+            <!-- ========================================= -->
             <!-- DASHBOARD -->
-            <!-- ========================= -->
+            <!-- ========================================= -->
 
-            <section class="admin-section active" id="dashboard">
+            <section
+                class="admin-section active"
+                id="dashboard"
+            >
 
                 <div class="section-heading">
+
                     <div>
                         <h1>Dashboard</h1>
-                        <p>Overview of your Softwez directory.</p>
+                        <p>
+                            Overview of your Softwez directory.
+                        </p>
                     </div>
+
                 </div>
 
 
                 <div class="stats-grid">
 
                     <div class="stat-card">
-                        <div class="stat-label">Total Tools</div>
-                        <div class="stat-value" id="totalTools">0</div>
+
+                        <div class="stat-label">
+                            Total Tools
+                        </div>
+
+                        <div
+                            class="stat-value"
+                            id="totalTools"
+                        >
+                            0
+                        </div>
+
                     </div>
 
-                    <div class="stat-card">
-                        <div class="stat-label">Categories</div>
-                        <div class="stat-value" id="totalCategories">0</div>
-                    </div>
 
                     <div class="stat-card">
-                        <div class="stat-label">Sponsored</div>
-                        <div class="stat-value" id="totalSponsored">0</div>
+
+                        <div class="stat-label">
+                            Categories
+                        </div>
+
+                        <div
+                            class="stat-value"
+                            id="totalCategories"
+                        >
+                            0
+                        </div>
+
                     </div>
 
+
                     <div class="stat-card">
-                        <div class="stat-label">Affiliate Tools</div>
-                        <div class="stat-value" id="totalAffiliate">0</div>
+
+                        <div class="stat-label">
+                            Sponsored
+                        </div>
+
+                        <div
+                            class="stat-value"
+                            id="totalSponsored"
+                        >
+                            0
+                        </div>
+
+                    </div>
+
+
+                    <div class="stat-card">
+
+                        <div class="stat-label">
+                            Affiliate Tools
+                        </div>
+
+                        <div
+                            class="stat-value"
+                            id="totalAffiliate"
+                        >
+                            0
+                        </div>
+
+                    </div>
+
+
+                    <div class="stat-card">
+
+                        <div class="stat-label">
+                            Pending Submissions
+                        </div>
+
+                        <div
+                            class="stat-value"
+                            id="pendingSubmissions"
+                        >
+                            0
+                        </div>
+
                     </div>
 
                 </div>
 
 
+                <!-- QUICK ACTIONS -->
+
                 <div class="dashboard-card">
 
                     <div class="card-header">
+
                         <div>
                             <h2>Quick Actions</h2>
-                            <p>Manage your directory.</p>
+                            <p>
+                                Manage your directory.
+                            </p>
                         </div>
+
                     </div>
+
 
                     <div class="quick-actions">
 
-                        <button class="quick-action" data-go="tools">
+                        <button
+                            type="button"
+                            class="quick-action"
+                            data-go="tools"
+                        >
                             <span>＋</span>
-                            <strong>Add Tool</strong>
-                            <small>Add a new resource</small>
+
+                            <strong>
+                                Add Tool
+                            </strong>
+
+                            <small>
+                                Add a new resource
+                            </small>
                         </button>
 
-                        <button class="quick-action" data-go="categories">
+
+                        <button
+                            type="button"
+                            class="quick-action"
+                            data-go="pending-submissions"
+                        >
+                            <span>◷</span>
+
+                            <strong>
+                                Pending Submissions
+                            </strong>
+
+                            <small>
+                                Review user submissions
+                            </small>
+                        </button>
+
+
+                        <button
+                            type="button"
+                            class="quick-action"
+                            data-go="categories"
+                        >
                             <span>☷</span>
-                            <strong>Categories</strong>
-                            <small>Manage categories</small>
+
+                            <strong>
+                                Categories
+                            </strong>
+
+                            <small>
+                                Manage categories
+                            </small>
                         </button>
 
-                        <button class="quick-action" data-go="sponsored">
+
+                        <button
+                            type="button"
+                            class="quick-action"
+                            data-go="sponsored"
+                        >
                             <span>★</span>
-                            <strong>Sponsored</strong>
-                            <small>Manage sponsored tools</small>
+
+                            <strong>
+                                Sponsored
+                            </strong>
+
+                            <small>
+                                Manage sponsored tools
+                            </small>
                         </button>
 
-                        <button class="quick-action" data-go="ads">
+
+                        <button
+                            type="button"
+                            class="quick-action"
+                            data-go="ads"
+                        >
                             <span>▣</span>
-                            <strong>Ad Network</strong>
-                            <small>Manage advertisements</small>
+
+                            <strong>
+                                Ad Network
+                            </strong>
+
+                            <small>
+                                Manage advertisements
+                            </small>
                         </button>
 
                     </div>
@@ -170,21 +363,30 @@
             </section>
 
 
-
-            <!-- ========================= -->
+            <!-- ========================================= -->
             <!-- TOOLS -->
-            <!-- ========================= -->
+            <!-- ========================================= -->
 
-            <section class="admin-section" id="tools">
+            <section
+                class="admin-section"
+                id="tools"
+            >
 
                 <div class="section-heading">
 
                     <div>
                         <h1>Tools</h1>
-                        <p>Add and manage resources listed on Softwez.</p>
+
+                        <p>
+                            Add and manage resources listed on Softwez.
+                        </p>
                     </div>
 
-                    <button class="primary-button" id="addToolButton">
+                    <button
+                        type="button"
+                        class="primary-button"
+                        id="addToolButton"
+                    >
                         + Add Tool
                     </button>
 
@@ -193,13 +395,19 @@
 
                 <!-- ADD TOOL FORM -->
 
-                <div class="form-card" id="toolFormCard">
+                <div
+                    class="form-card"
+                    id="toolFormCard"
+                >
 
                     <div class="card-header">
 
                         <div>
                             <h2>Add New Tool</h2>
-                            <p>Add a resource to your directory.</p>
+
+                            <p>
+                                Add a resource to your directory.
+                            </p>
                         </div>
 
                     </div>
@@ -219,6 +427,7 @@
                                     type="text"
                                     id="toolName"
                                     placeholder="e.g. Google Colab"
+                                    autocomplete="off"
                                     required
                                 >
 
@@ -234,6 +443,7 @@
                                 <textarea
                                     id="toolDescription"
                                     rows="4"
+                                    maxlength="200"
                                     placeholder="Short description of the tool..."
                                     required
                                 ></textarea>
@@ -251,27 +461,67 @@
                                     type="url"
                                     id="toolLink"
                                     placeholder="https://example.com"
+                                    inputmode="url"
+                                    autocomplete="url"
                                     required
                                 >
+<div class="url-check-actions">
 
+    <button
+        type="button"
+        class="secondary-button"
+        id="checkToolUrlButton"
+    >
+        Check URL
+    </button>
+
+    <span
+        id="toolUrlCheckMessage"
+        class="url-check-message"
+    ></span>
+
+</div>
                             </div>
 
+<div class="form-group">
 
-                            <div class="form-group">
+    <label for="toolCategory">
+        Category
+    </label>
 
-                                <label for="toolCategory">
-                                    Category
-                                </label>
+    <select
+        id="toolCategory"
+        required
+    >
 
-                                <select id="toolCategory" required>
+        <option value="">
+            Select category
+        </option>
 
-                                    <option value="">
-                                        Select category
-                                    </option>
+    </select>
 
-                                </select>
+</div>
 
-                            </div>
+
+<div class="form-group">
+
+    <label for="toolSubcategory">
+        Subcategory
+    </label>
+
+    <select
+        id="toolSubcategory"
+        required
+        disabled
+    >
+
+        <option value="">
+            Select category first
+        </option>
+
+    </select>
+
+</div>
 
                         </div>
 
@@ -308,7 +558,10 @@
 
                         <div>
                             <h2>All Tools</h2>
-                            <p>Manage your existing resources.</p>
+
+                            <p>
+                                Manage your existing resources.
+                            </p>
                         </div>
 
                         <input
@@ -316,6 +569,7 @@
                             class="table-search"
                             id="toolSearch"
                             placeholder="Search tools..."
+                            autocomplete="off"
                         >
 
                     </div>
@@ -349,78 +603,27 @@
             </section>
 
 
+            <!-- ========================================= -->
+            <!-- PENDING SUBMISSIONS -->
+            <!-- ========================================= -->
 
-            <!-- ========================= -->
-            <!-- CATEGORIES -->
-            <!-- ========================= -->
-
-            <section class="admin-section" id="categories">
-
-                <div class="section-heading">
-
-                    <div>
-                        <h1>Categories</h1>
-                        <p>Create and manage Softwez categories.</p>
-                    </div>
-
-                </div>
-
-
-                <div class="form-card">
-
-                    <div class="card-header">
-
-                        <div>
-                            <h2>Add Category</h2>
-                            <p>Create a new category for your directory.</p>
-                        </div>
-
-                    </div>
-
-
-                    <form id="categoryForm">
-
-                        <div class="inline-form">
-
-                            <input
-                                type="text"
-                                id="categoryName"
-                                placeholder="Category name"
-                                required
-                            >
-
-                            <button
-                                type="submit"
-                                class="primary-button"
-                            >
-                                + Add Category
-                            </button>
-
-                        </div>
-
-                    </form>
-
-                </div>
-
-
-                <div class="category-admin-list" id="categoryAdminList">
-                </div>
-
-            </section>
-
-
-
-            <!-- ========================= -->
-            <!-- SPONSORED -->
-            <!-- ========================= -->
-
-            <section class="admin-section" id="sponsored">
+            <section
+                class="admin-section"
+                id="pending-submissions"
+            >
 
                 <div class="section-heading">
 
                     <div>
-                        <h1>Sponsored Tools</h1>
-                        <p>Manage sponsored tool placements.</p>
+
+                        <h1>
+                            Pending Submissions
+                        </h1>
+
+                        <p>
+                            Review tools submitted by Softwez users.
+                        </p>
+
                     </div>
 
                 </div>
@@ -428,16 +631,23 @@
 
                 <div class="info-card">
 
-                    <div class="info-icon">★</div>
+                    <div class="info-icon">
+                        ◷
+                    </div>
 
                     <div>
-                        <h3>Sponsored Tool Placement</h3>
+
+                        <h3>
+                            Review User Submissions
+                        </h3>
 
                         <p>
-                            Select a tool and mark it as sponsored.
-                            Sponsored resources will be displayed in
-                            designated sponsored positions on Softwez.
+                            User-submitted resources remain pending
+                            until they are approved or rejected.
+                            Approved resources will be added to the
+                            Softwez directory.
                         </p>
+
                     </div>
 
                 </div>
@@ -448,32 +658,719 @@
                     <div class="card-header">
 
                         <div>
-                            <h2>Sponsored Tools</h2>
-                            <p>Currently sponsored resources.</p>
+
+                            <h2>
+                                Pending Tools
+                            </h2>
+
+                            <p>
+                                Submissions waiting for review.
+                            </p>
+
+                        </div>
+
+                        <div
+                            class="submission-count"
+                            id="pendingSubmissionCount"
+                        >
+                            0 pending
                         </div>
 
                     </div>
 
-                    <div id="sponsoredList">
+
+                    <div class="table-wrapper">
+
+                        <table>
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>
+                                        Tool
+                                    </th>
+
+                                    <th>
+                                        Description
+                                    </th>
+
+                                    <th>
+                                        Category
+                                    </th>
+
+                                    <th>
+                                        Submitted
+                                    </th>
+
+                                    <th>
+                                        Actions
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody
+                                id="pendingSubmissionsBody"
+                            >
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+
+                    <!-- EMPTY STATE -->
+
+                    <div
+                        class="empty-state"
+                        id="pendingSubmissionsEmpty"
+                        style="display: none;"
+                    >
+
+                        <div class="empty-state-icon">
+                            ✓
+                        </div>
+
+                        <h3>
+                            No Pending Submissions
+                        </h3>
+
+                        <p>
+                            There are no user submissions waiting
+                            for review.
+                        </p>
+
                     </div>
 
                 </div>
 
             </section>
 
+<!-- ========================================= -->
+<!-- CATEGORIES -->
+<!-- ========================================= -->
+
+<section
+    class="admin-section"
+    id="categories"
+>
+
+    <div class="section-heading">
+
+        <div>
+
+            <h1>
+                Categories
+            </h1>
+
+            <p>
+                Manage categories and subcategories for your Softwez directory.
+            </p>
+
+        </div>
+
+    </div>
 
 
-            <!-- ========================= -->
+    <!-- ========================================= -->
+    <!-- ADD CATEGORY -->
+    <!-- ========================================= -->
+
+    <div class="form-card">
+
+        <div class="card-header">
+
+            <div>
+
+                <h2>
+                    Add Category
+                </h2>
+
+                <p>
+                    Create a new main category for the Softwez directory.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <form id="categoryForm">
+
+            <div class="form-grid">
+
+                <div class="form-group full">
+
+                    <label for="categoryName">
+                        Category Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="categoryName"
+                        placeholder="e.g. AI"
+                        autocomplete="off"
+                        required
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="form-actions">
+
+                <button
+                    type="reset"
+                    class="secondary-button"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="primary-button"
+                >
+                    + Add Category
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+
+    <!-- ========================================= -->
+    <!-- ADD SUBCATEGORY -->
+    <!-- ========================================= -->
+
+    <div class="form-card">
+
+        <div class="card-header">
+
+            <div>
+
+                <h2>
+                    Add Subcategory
+                </h2>
+
+                <p>
+                    Add a subcategory under an existing category.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <form id="subcategoryForm">
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label for="subcategoryCategory">
+                        Category
+                    </label>
+
+                    <select
+                        id="subcategoryCategory"
+                        required
+                    >
+
+                        <option value="">
+                            Select category
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="subcategoryName">
+                        Subcategory
+                    </label>
+
+                    <input
+                        type="text"
+                        id="subcategoryName"
+                        placeholder="e.g. AI Writing"
+                        autocomplete="off"
+                        required
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="form-actions">
+
+                <button
+                    type="reset"
+                    class="secondary-button"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="primary-button"
+                >
+                    + Add Subcategory
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+
+    <!-- ========================================= -->
+    <!-- CATEGORY LIST -->
+    <!-- ========================================= -->
+
+    <div class="table-card">
+
+        <div class="card-header">
+
+            <div>
+
+                <h2>
+                    Categories
+                </h2>
+
+                <p>
+                    Manage your categories and subcategories.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div
+            class="category-admin-list"
+            id="categoryAdminList"
+        >
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ========================================= -->
+<!-- SPONSORED -->
+<!-- ========================================= -->
+
+<section
+    class="admin-section"
+    id="sponsored"
+>
+
+    <div class="section-heading">
+
+        <div>
+
+            <h1>
+                Sponsored
+            </h1>
+
+            <p>
+                Create and manage sponsored campaigns.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- CREATE CAMPAIGN -->
+
+    <div class="form-card">
+
+        <div class="card-header">
+
+            <div>
+
+                <h2>
+                    Create Sponsored Campaign
+                </h2>
+
+                <p>
+                    Choose a tool and set how long or how many clicks
+                    the sponsorship should run.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <form id="sponsoredCampaignForm">
+
+            <div class="form-grid">
+
+
+                <!-- TOOL -->
+
+<div class="form-group full">
+
+    <label for="sponsoredToolSearch">
+        Tool
+    </label>
+
+    <input
+        type="search"
+        id="sponsoredToolSearch"
+        placeholder="Search tool..."
+        autocomplete="off"
+    >
+
+    <div
+        id="sponsoredToolResults"
+        class="sponsored-tool-results"
+    ></div>
+
+    <div
+        id="sponsoredToolSelected"
+        class="sponsored-tool-selected"
+    ></div>
+
+    <input
+        type="hidden"
+        id="sponsoredTool"
+        required
+    >
+
+</div>
+
+                <!-- CAMPAIGN TYPE -->
+
+                <div class="form-group">
+
+                    <label for="campaignType">
+                        Campaign Type
+                    </label>
+
+                    <select
+                        id="campaignType"
+                        required
+                    >
+
+                        <option value="">
+                            Select campaign type
+                        </option>
+
+                        <option value="time">
+                            Time Based
+                        </option>
+
+                        <option value="click">
+                            Click Based
+                        </option>
+
+                        <option value="time_click">
+                            Time + Click Based
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- START -->
+
+                <div class="form-group">
+
+                    <label for="campaignStartAt">
+                        Start Date & Time
+                    </label>
+
+                    <input
+                        type="datetime-local"
+                        id="campaignStartAt"
+                    >
+
+                </div>
+
+
+                <!-- END -->
+
+                <div
+                    class="form-group"
+                    id="campaignEndGroup"
+                >
+
+                    <label for="campaignEndAt">
+                        End Date & Time
+                    </label>
+
+                    <input
+                        type="datetime-local"
+                        id="campaignEndAt"
+                    >
+
+                </div>
+
+
+                <!-- CLICK LIMIT -->
+
+                <div
+                    class="form-group"
+                    id="campaignClickGroup"
+                >
+
+                    <label for="campaignClickLimit">
+                        Click Limit
+                    </label>
+
+                    <input
+                        type="number"
+                        id="campaignClickLimit"
+                        min="1"
+                        step="1"
+                        placeholder="e.g. 1000"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="form-actions">
+
+                <button
+                    type="reset"
+                    class="secondary-button"
+                    id="cancelSponsoredCampaignButton"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="primary-button"
+                >
+                    Create Campaign
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+
+    <!-- ANALYTICS -->
+
+    <div class="stats-grid">
+
+        <div class="stat-card">
+
+            <div class="stat-label">
+                Active Campaigns
+            </div>
+
+            <div
+                class="stat-value"
+                id="activeSponsoredCampaigns"
+            >
+                0
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-label">
+                Sponsored Impressions
+            </div>
+
+            <div
+                class="stat-value"
+                id="sponsoredImpressions"
+            >
+                0
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-label">
+                Sponsor Clicks
+            </div>
+
+            <div
+                class="stat-value"
+                id="sponsoredClicks"
+            >
+                0
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-label">
+                Click Through Rate
+            </div>
+
+            <div
+                class="stat-value"
+                id="sponsoredCTR"
+            >
+                0%
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- CAMPAIGN LIST -->
+
+    <div class="table-card">
+
+        <div class="card-header">
+
+            <div>
+
+                <h2>
+                    Sponsored Campaigns
+                </h2>
+
+                <p>
+                    Active and previous sponsorship campaigns.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+    Tool
+</th>
+
+<th>
+    Type
+</th>
+
+<th>
+    Start
+</th>
+
+<th>
+    End
+</th>
+
+<th>
+    Click Limit
+</th>
+
+<th>
+    Impressions
+</th>
+
+<th>
+    Clicks
+</th>
+
+<th>
+    CTR
+</th>
+
+<th>
+    Status
+</th>
+
+<th>
+    Actions
+</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody
+                    id="sponsoredCampaignsBody"
+                >
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <div
+            class="empty-state"
+            id="sponsoredCampaignsEmpty"
+            style="display:none;"
+        >
+
+            <div class="empty-state-icon">
+                ★
+            </div>
+
+            <h3>
+                No Sponsored Campaigns
+            </h3>
+
+            <p>
+                Create a campaign to start sponsoring a tool.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+            <!-- ========================================= -->
             <!-- AFFILIATE -->
-            <!-- ========================= -->
+            <!-- ========================================= -->
 
-            <section class="admin-section" id="affiliate">
+            <section
+                class="admin-section"
+                id="affiliate"
+            >
 
                 <div class="section-heading">
 
                     <div>
-                        <h1>Affiliate</h1>
-                        <p>Manage affiliate links for your tools.</p>
+
+                        <h1>
+                            Affiliate
+                        </h1>
+
+                        <p>
+                            Manage affiliate links for your tools.
+                        </p>
+
                     </div>
 
                 </div>
@@ -484,10 +1381,15 @@
                     <div class="card-header">
 
                         <div>
-                            <h2>Affiliate Link</h2>
+
+                            <h2>
+                                Affiliate Link
+                            </h2>
+
                             <p>
                                 Add or update an affiliate URL for a tool.
                             </p>
+
                         </div>
 
                     </div>
@@ -503,13 +1405,28 @@
                                     Tool
                                 </label>
 
-                                <select id="affiliateTool">
+                                <input
+    type="search"
+    id="affiliateToolSearch"
+    placeholder="Search tool..."
+    autocomplete="off"
+>
 
-                                    <option value="">
-                                        Select tool
-                                    </option>
+<div
+    id="affiliateToolResults"
+    class="affiliate-tool-results"
+></div>
 
-                                </select>
+<div
+    id="affiliateToolSelected"
+    class="affiliate-tool-selected"
+></div>
+
+<input
+    type="hidden"
+    id="affiliateTool"
+    required
+>
 
                             </div>
 
@@ -524,6 +1441,8 @@
                                     type="url"
                                     id="affiliateLink"
                                     placeholder="https://example.com/ref/..."
+                                    inputmode="url"
+                                    autocomplete="url"
                                 >
 
                             </div>
@@ -552,11 +1471,19 @@
                     <div class="card-header">
 
                         <div>
-                            <h2>Affiliate Tools</h2>
-                            <p>Tools currently using affiliate links.</p>
+
+                            <h2>
+                                Affiliate Tools
+                            </h2>
+
+                            <p>
+                                Tools currently using affiliate links.
+                            </p>
+
                         </div>
 
                     </div>
+
 
                     <div id="affiliateList">
                     </div>
@@ -566,18 +1493,27 @@
             </section>
 
 
-
-            <!-- ========================= -->
+            <!-- ========================================= -->
             <!-- AD NETWORK -->
-            <!-- ========================= -->
+            <!-- ========================================= -->
 
-            <section class="admin-section" id="ads">
+            <section
+                class="admin-section"
+                id="ads"
+            >
 
                 <div class="section-heading">
 
                     <div>
-                        <h1>Ad Network</h1>
-                        <p>Manage your advertising network settings.</p>
+
+                        <h1>
+                            Ad Network
+                        </h1>
+
+                        <p>
+                            Manage your advertising network settings.
+                        </p>
+
                     </div>
 
                 </div>
@@ -588,10 +1524,15 @@
                     <div class="card-header">
 
                         <div>
-                            <h2>Add Ad Network</h2>
+
+                            <h2>
+                                Add Ad Network
+                            </h2>
+
                             <p>
                                 Connect an advertising network to Softwez.
                             </p>
+
                         </div>
 
                     </div>
@@ -611,6 +1552,7 @@
                                     type="text"
                                     id="adNetworkName"
                                     placeholder="e.g. Google AdSense"
+                                    autocomplete="off"
                                     required
                                 >
 
@@ -627,6 +1569,7 @@
                                     type="text"
                                     id="adNetworkCode"
                                     placeholder="Paste ad code / ID"
+                                    autocomplete="off"
                                     required
                                 >
 
@@ -656,11 +1599,19 @@
                     <div class="card-header">
 
                         <div>
-                            <h2>Ad Networks</h2>
-                            <p>Your connected advertising networks.</p>
+
+                            <h2>
+                                Ad Networks
+                            </h2>
+
+                            <p>
+                                Your connected advertising networks.
+                            </p>
+
                         </div>
 
                     </div>
+
 
                     <div id="adNetworkList">
                     </div>
@@ -675,10 +1626,19 @@
     </main>
 
 
+    <!-- ========================================= -->
     <!-- JAVASCRIPT -->
+    <!-- ========================================= -->
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="../supabase-config.js"></script>
-<script src="script.js?v=2" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+
+    <script src="../supabase-config.js"></script>
+
+    <script
+        src="script.js?v=3"
+        defer
+    ></script>
 
 </body>
 </html>

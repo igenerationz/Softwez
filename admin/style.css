@@ -1,6 +1,6 @@
 /* =========================================================
    SOFTWEZ ADMIN PANEL
-   ========================================================= */
+========================================================= */
 
 * {
     margin: 0;
@@ -46,7 +46,7 @@ body {
 
 /* =========================================================
    SIDEBAR
-   ========================================================= */
+========================================================= */
 
 .admin-sidebar {
     position: fixed;
@@ -65,7 +65,6 @@ body {
     z-index: 100;
 }
 
-
 .admin-logo {
     padding: 25px 24px 10px;
 
@@ -80,7 +79,6 @@ body {
     color: var(--green);
 }
 
-
 .admin-label {
     padding: 0 24px 20px;
 
@@ -94,7 +92,7 @@ body {
 
 /* =========================================================
    NAVIGATION
-   ========================================================= */
+========================================================= */
 
 .admin-nav {
     display: flex;
@@ -104,7 +102,6 @@ body {
 
     gap: 3px;
 }
-
 
 .nav-item {
     width: 100%;
@@ -135,7 +132,6 @@ body {
         color 0.15s ease;
 }
 
-
 .nav-item span {
     width: 18px;
 
@@ -146,12 +142,10 @@ body {
     font-size: 16px;
 }
 
-
 .nav-item:hover {
     background: #f3f4f6;
     color: #111827;
 }
-
 
 .nav-item.active {
     background: var(--green-light);
@@ -162,7 +156,7 @@ body {
 
 /* =========================================================
    SIDEBAR BOTTOM
-   ========================================================= */
+========================================================= */
 
 .sidebar-bottom {
     margin-top: auto;
@@ -171,7 +165,6 @@ body {
 
     border-top: 1px solid var(--border);
 }
-
 
 .sidebar-bottom a {
     color: #6b7280;
@@ -182,7 +175,6 @@ body {
     font-weight: 500;
 }
 
-
 .sidebar-bottom a:hover {
     color: var(--green-dark);
 }
@@ -190,7 +182,7 @@ body {
 
 /* =========================================================
    MAIN
-   ========================================================= */
+========================================================= */
 
 .admin-main {
     margin-left: var(--sidebar-width);
@@ -201,7 +193,7 @@ body {
 
 /* =========================================================
    TOPBAR
-   ========================================================= */
+========================================================= */
 
 .admin-topbar {
     height: 76px;
@@ -222,7 +214,6 @@ body {
     z-index: 50;
 }
 
-
 .page-title {
     font-size: 17px;
     font-weight: 700;
@@ -230,14 +221,12 @@ body {
     color: #111827;
 }
 
-
 .page-subtitle {
     margin-top: 3px;
 
     font-size: 12px;
     color: #9ca3af;
 }
-
 
 .admin-status {
     display: flex;
@@ -251,7 +240,6 @@ body {
     color: #6b7280;
 }
 
-
 .status-dot {
     width: 7px;
     height: 7px;
@@ -264,7 +252,7 @@ body {
 
 /* =========================================================
    CONTENT
-   ========================================================= */
+========================================================= */
 
 .admin-content {
     width: 100%;
@@ -276,11 +264,9 @@ body {
     padding: 34px;
 }
 
-
 .admin-section {
     display: none;
 }
-
 
 .admin-section.active {
     display: block;
@@ -289,7 +275,7 @@ body {
 
 /* =========================================================
    SECTION HEADING
-   ========================================================= */
+========================================================= */
 
 .section-heading {
     display: flex;
@@ -301,7 +287,6 @@ body {
     margin-bottom: 26px;
 }
 
-
 .section-heading h1 {
     font-size: 24px;
     line-height: 1.2;
@@ -310,7 +295,6 @@ body {
 
     margin-bottom: 6px;
 }
-
 
 .section-heading p {
     color: var(--muted);
@@ -321,12 +305,11 @@ body {
 
 /* =========================================================
    BUTTONS
-   ========================================================= */
+========================================================= */
 
 button {
     font-family: inherit;
 }
-
 
 .primary-button {
     border: 0;
@@ -348,16 +331,13 @@ button {
         transform 0.1s ease;
 }
 
-
 .primary-button:hover {
     background: var(--green-dark);
 }
 
-
 .primary-button:active {
     transform: translateY(1px);
 }
-
 
 .secondary-button {
     border: 1px solid var(--border);
@@ -375,7 +355,6 @@ button {
     cursor: pointer;
 }
 
-
 .secondary-button:hover {
     background: #f9fafb;
 }
@@ -383,7 +362,7 @@ button {
 
 /* =========================================================
    DASHBOARD STATS
-   ========================================================= */
+========================================================= */
 
 .stats-grid {
     display: grid;
@@ -396,7 +375,6 @@ button {
     margin-bottom: 22px;
 }
 
-
 .stat-card {
     background: white;
 
@@ -407,7 +385,6 @@ button {
     padding: 20px;
 }
 
-
 .stat-label {
     color: var(--muted);
 
@@ -416,7 +393,6 @@ button {
 
     margin-bottom: 10px;
 }
-
 
 .stat-value {
     font-size: 28px;
@@ -430,7 +406,7 @@ button {
 
 /* =========================================================
    CARDS
-   ========================================================= */
+========================================================= */
 
 .dashboard-card,
 .form-card,
@@ -445,7 +421,6 @@ button {
     margin-bottom: 22px;
 }
 
-
 .card-header {
     padding: 20px 22px;
 
@@ -458,13 +433,11 @@ button {
     gap: 20px;
 }
 
-
 .card-header h2 {
     font-size: 15px;
 
     margin-bottom: 4px;
 }
-
 
 .card-header p {
     color: var(--muted);
@@ -475,7 +448,7 @@ button {
 
 /* =========================================================
    QUICK ACTIONS
-   ========================================================= */
+========================================================= */
 
 .quick-actions {
     display: grid;
@@ -487,7 +460,6 @@ button {
 
     padding: 20px 22px;
 }
-
 
 .quick-action {
     border: 1px solid var(--border);
@@ -507,12 +479,10 @@ button {
         background 0.15s ease;
 }
 
-
 .quick-action:hover {
     border-color: #bbf7d0;
     background: #fafffb;
 }
-
 
 .quick-action > span {
     display: block;
@@ -524,7 +494,6 @@ button {
     margin-bottom: 10px;
 }
 
-
 .quick-action strong {
     display: block;
 
@@ -532,7 +501,6 @@ button {
 
     margin-bottom: 4px;
 }
-
 
 .quick-action small {
     color: var(--muted);
@@ -543,17 +511,15 @@ button {
 
 /* =========================================================
    FORMS
-   ========================================================= */
+========================================================= */
 
 .form-card {
     overflow: hidden;
 }
 
-
 .form-card form {
     padding: 22px;
 }
-
 
 .form-grid {
     display: grid;
@@ -564,7 +530,6 @@ button {
     gap: 18px;
 }
 
-
 .form-group {
     display: flex;
     flex-direction: column;
@@ -572,11 +537,9 @@ button {
     gap: 7px;
 }
 
-
 .form-group.full {
     grid-column: 1 / -1;
 }
-
 
 .form-group label {
     font-size: 12px;
@@ -585,7 +548,6 @@ button {
 
     color: #374151;
 }
-
 
 input,
 textarea,
@@ -613,12 +575,10 @@ select {
         box-shadow 0.15s ease;
 }
 
-
 input::placeholder,
 textarea::placeholder {
     color: #9ca3af;
 }
-
 
 input:focus,
 textarea:focus,
@@ -629,13 +589,11 @@ select:focus {
         0 0 0 3px rgba(34, 197, 94, 0.08);
 }
 
-
 textarea {
     resize: vertical;
 
     min-height: 100px;
 }
-
 
 .form-actions {
     display: flex;
@@ -652,7 +610,6 @@ textarea {
     border-top: 1px solid var(--border);
 }
 
-
 .inline-form {
     display: flex;
 
@@ -661,7 +618,6 @@ textarea {
     padding: 22px;
 }
 
-
 .inline-form input {
     flex: 1;
 }
@@ -669,12 +625,11 @@ textarea {
 
 /* =========================================================
    TABLE
-   ========================================================= */
+========================================================= */
 
 .table-card {
     overflow: hidden;
 }
-
 
 .table-search {
     width: 220px;
@@ -682,13 +637,11 @@ textarea {
     padding: 8px 10px;
 }
 
-
 .table-wrapper {
     width: 100%;
 
     overflow-x: auto;
 }
-
 
 table {
     width: 100%;
@@ -697,7 +650,6 @@ table {
 
     min-width: 700px;
 }
-
 
 th {
     background: #fafafa;
@@ -715,7 +667,6 @@ th {
     border-bottom: 1px solid var(--border);
 }
 
-
 td {
     padding: 14px 20px;
 
@@ -726,23 +677,19 @@ td {
     vertical-align: middle;
 }
 
-
 tbody tr:last-child td {
     border-bottom: 0;
 }
 
-
 tbody tr:hover {
     background: #fafafa;
 }
-
 
 .tool-name {
     font-weight: 600;
 
     color: #111827;
 }
-
 
 .tool-description {
     color: var(--muted);
@@ -753,7 +700,6 @@ tbody tr:hover {
 
     max-width: 350px;
 }
-
 
 .category-badge {
     display: inline-block;
@@ -771,7 +717,6 @@ tbody tr:hover {
     font-weight: 500;
 }
 
-
 .table-link {
     color: var(--green-dark);
 
@@ -782,15 +727,124 @@ tbody tr:hover {
     font-weight: 500;
 }
 
-
 .table-link:hover {
     text-decoration: underline;
 }
+/* =========================================================
+   SPONSORED CAMPAIGN TABLE
+========================================================= */
 
+#sponsored .table-wrapper {
+    overflow-x: auto;
+    border-top: 1px solid var(--border);
+}
+
+#sponsored table {
+    min-width: 1100px;
+}
+
+#sponsored th {
+    padding: 12px 16px;
+    background: #f8fafc;
+    color: #6b7280;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.35px;
+    white-space: nowrap;
+}
+
+#sponsored td {
+    padding: 15px 16px;
+    font-size: 12px;
+    color: #374151;
+    white-space: nowrap;
+}
+
+#sponsored tbody tr {
+    transition:
+        background 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+#sponsored tbody tr:hover {
+    background: #fafffb;
+}
+
+#sponsored tbody td:first-child {
+    min-width: 180px;
+}
+
+#sponsored tbody td:nth-child(3),
+#sponsored tbody td:nth-child(4) {
+    color: #6b7280;
+    font-size: 11px;
+}
+
+#sponsored tbody td:nth-child(5) {
+    font-weight: 600;
+    color: #374151;
+    text-align: center;
+}
+
+#sponsored tbody td:nth-child(6),
+#sponsored tbody td:nth-child(7) {
+    font-weight: 700;
+    color: #111827;
+    text-align: center;
+}
+
+#sponsored tbody td:nth-child(8) {
+    font-weight: 700;
+    color: var(--green-dark);
+    text-align: center;
+}
+
+#sponsored tbody td:nth-child(9) {
+    text-align: center;
+}
+
+#sponsored tbody td:nth-child(10) {
+    min-width: 280px;
+}
+
+#sponsored .category-badge {
+    padding: 5px 9px;
+    border-radius: 999px;
+    background: #f0fdf4;
+    color: #15803d;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+#sponsored .table-actions {
+    gap: 5px;
+    flex-wrap: nowrap;
+}
+
+#sponsored .action-button {
+    padding: 6px 9px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+#sponsored .action-button:hover {
+    border-color: #bbf7d0;
+    background: #f0fdf4;
+    color: #15803d;
+}
+
+#sponsored .action-button.delete:hover {
+    color: #dc2626;
+    border-color: #fecaca;
+    background: #fef2f2;
+}
 
 /* =========================================================
    TABLE ACTIONS
-   ========================================================= */
+========================================================= */
 
 .table-actions {
     display: flex;
@@ -799,7 +853,6 @@ tbody tr:hover {
 
     gap: 6px;
 }
-
 
 .action-button {
     border: 1px solid var(--border);
@@ -817,13 +870,11 @@ tbody tr:hover {
     cursor: pointer;
 }
 
-
 .action-button:hover {
     background: #f9fafb;
 
     color: #111827;
 }
-
 
 .action-button.delete:hover {
     color: #dc2626;
@@ -836,7 +887,7 @@ tbody tr:hover {
 
 /* =========================================================
    CATEGORY ADMIN
-   ========================================================= */
+========================================================= */
 
 .category-admin-list {
     background: white;
@@ -847,7 +898,6 @@ tbody tr:hover {
 
     overflow: hidden;
 }
-
 
 .category-admin-item {
     display: flex;
@@ -862,18 +912,15 @@ tbody tr:hover {
     border-bottom: 1px solid #f0f0f0;
 }
 
-
 .category-admin-item:last-child {
     border-bottom: 0;
 }
-
 
 .category-admin-name {
     font-size: 13px;
 
     font-weight: 600;
 }
-
 
 .category-admin-actions {
     display: flex;
@@ -884,7 +931,7 @@ tbody tr:hover {
 
 /* =========================================================
    INFO CARD
-   ========================================================= */
+========================================================= */
 
 .info-card {
     display: flex;
@@ -899,7 +946,6 @@ tbody tr:hover {
 
     border-color: #dcfce7;
 }
-
 
 .info-icon {
     width: 34px;
@@ -920,13 +966,11 @@ tbody tr:hover {
     font-size: 16px;
 }
 
-
 .info-card h3 {
     font-size: 14px;
 
     margin-bottom: 5px;
 }
-
 
 .info-card p {
     color: #6b7280;
@@ -939,12 +983,11 @@ tbody tr:hover {
 
 /* =========================================================
    LIST ITEMS
-   ========================================================= */
+========================================================= */
 
 .admin-list {
     padding: 0;
 }
-
 
 .admin-list-item {
     display: flex;
@@ -959,16 +1002,13 @@ tbody tr:hover {
     border-bottom: 1px solid #f0f0f0;
 }
 
-
 .admin-list-item:last-child {
     border-bottom: 0;
 }
 
-
 .admin-list-main {
     min-width: 0;
 }
-
 
 .admin-list-title {
     font-size: 13px;
@@ -977,7 +1017,6 @@ tbody tr:hover {
 
     margin-bottom: 3px;
 }
-
 
 .admin-list-meta {
     font-size: 11px;
@@ -991,7 +1030,6 @@ tbody tr:hover {
     white-space: nowrap;
 }
 
-
 .admin-list-actions {
     flex-shrink: 0;
 
@@ -1003,7 +1041,7 @@ tbody tr:hover {
 
 /* =========================================================
    EMPTY STATE
-   ========================================================= */
+========================================================= */
 
 .empty-state {
     padding: 45px 20px;
@@ -1018,7 +1056,7 @@ tbody tr:hover {
 
 /* =========================================================
    RESPONSIVE
-   ========================================================= */
+========================================================= */
 
 @media (max-width: 1050px) {
 
@@ -1107,6 +1145,310 @@ tbody tr:hover {
     }
 
     .inline-form .primary-button {
+        width: 100%;
+    }
+
+}
+/* =========================================================
+   PENDING SUBMISSIONS
+========================================================= */
+
+.pending-nav-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 20px;
+    height: 20px;
+
+    margin-left: auto;
+    padding: 0 6px;
+
+    border-radius: 999px;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    background: rgba(34, 197, 94, 0.12);
+    color: #16a34a;
+}
+
+
+.submission-count {
+    display: inline-flex;
+    align-items: center;
+
+    padding: 6px 10px;
+
+    border-radius: 999px;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    background: rgba(34, 197, 94, 0.10);
+    color: #16a34a;
+}
+
+
+#pendingSubmissionsBody .tool-name {
+    margin-bottom: 5px;
+}
+
+
+#pendingSubmissionsBody .tool-description {
+    max-width: 360px;
+    line-height: 1.5;
+}
+
+
+#pendingSubmissionsBody .table-link {
+    display: inline-block;
+    margin-top: 4px;
+}
+
+
+#pendingSubmissionsBody .table-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+
+@media (max-width: 800px) {
+
+    .pending-nav-count {
+        margin-left: 6px;
+    }
+
+    .submission-count {
+        font-size: 11px;
+        padding: 5px 8px;
+    }
+
+}
+/* =========================================================
+   CATEGORY + SUBCATEGORY ADMIN UI
+========================================================= */
+
+#categories .form-card {
+    overflow: hidden;
+}
+
+#subcategoryForm .form-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 16px;
+    align-items: end;
+}
+
+#subcategoryForm .form-group {
+    min-width: 0;
+}
+
+#subcategoryForm .form-group input,
+#subcategoryForm .form-group select {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+#subcategoryForm .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+/* Category list */
+
+#categoryAdminList {
+    overflow: hidden;
+}
+
+.category-admin-item {
+    border-bottom: 1px solid #eceff1;
+    background: #fff;
+}
+
+.category-admin-item:last-child {
+    border-bottom: 0;
+}
+
+.category-admin-header {
+    min-height: 62px;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.category-admin-header > div:first-child {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    min-width: 0;
+}
+
+.category-admin-header strong {
+    color: #111827;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.category-admin-header small {
+    color: #8a8f98;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+/* Subcategory list */
+
+.subcategory-admin-list {
+    margin: 0 20px 14px 20px;
+    border: 1px solid #eef0f2;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fafbfc;
+}
+
+.subcategory-admin-item {
+    min-height: 44px;
+    padding: 8px 12px 8px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border-bottom: 1px solid #eef0f2;
+}
+
+.subcategory-admin-item:last-child {
+    border-bottom: 0;
+}
+
+.subcategory-admin-item span {
+    color: #4b5563;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.subcategory-admin-item .action-button {
+    flex-shrink: 0;
+    padding: 5px 9px;
+    font-size: 11px;
+}
+
+.subcategory-empty {
+    padding: 13px 16px;
+    color: #a0a5ad;
+    font-size: 12px;
+}
+
+/* Better buttons */
+
+.category-admin-header .action-button {
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+#subcategoryForm .primary-button {
+    min-width: 125px;
+}
+
+/* Mobile */
+
+@media (max-width: 700px) {
+
+    #subcategoryForm .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    #subcategoryForm .form-actions {
+        justify-content: stretch;
+    }
+
+    #subcategoryForm .form-actions button {
+        flex: 1;
+    }
+
+    .category-admin-header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .category-admin-header > div:first-child {
+        width: 100%;
+    }
+
+    .category-admin-header .action-button {
+        width: 100%;
+    }
+
+    .subcategory-admin-list {
+        margin-left: 14px;
+        margin-right: 14px;
+    }
+}
+/* =========================================================
+   ADMIN TOOL URL CHECK
+========================================================= */
+
+.url-check-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+#checkToolUrlButton {
+    flex-shrink: 0;
+    height: 38px;
+    padding: 0 14px;
+
+    border: 1px solid #111;
+    border-radius: 7px;
+
+    background: #111;
+    color: #fff;
+
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+#checkToolUrlButton:hover {
+    opacity: 0.9;
+}
+
+#checkToolUrlButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+#toolUrlCheckMessage {
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+#toolUrlCheckMessage.success {
+    color: #18794e;
+}
+
+#toolUrlCheckMessage.error {
+    color: #c62828;
+}
+
+@media (max-width: 600px) {
+
+    .url-check-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    #checkToolUrlButton {
         width: 100%;
     }
 

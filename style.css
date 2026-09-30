@@ -281,15 +281,15 @@ header {
 */
 
 .sidebar {
-    position: absolute;
+    position: fixed;
 
-    left: 0;
+    left: calc(50% - 590px);
 
-    top: 0;
+    top: 120px;
 
     width: 190px;
 
-    max-height: calc(100vh - 100px);
+    max-height: calc(100vh - 150px);
 
     overflow-y: auto;
 
@@ -299,7 +299,7 @@ header {
 }
 
 .sidebar::-webkit-scrollbar {
-    width: 4px;
+    width: 0;
 }
 
 .sidebar::-webkit-scrollbar-thumb {
@@ -596,25 +596,6 @@ header {
    SPONSORED
 ========================================================= */
 
-.resource.sponsored {
-    margin: 6px 0;
-
-    padding: 17px 8px;
-
-    border: 1px solid var(--sponsor-border);
-
-    border-radius: 6px;
-
-    background: var(--sponsor-bg);
-}
-
-.resource.sponsored:hover {
-    background: var(--sponsor-bg);
-
-    padding-left: 12px;
-    padding-right: 12px;
-}
-
 .sponsored-label {
     color: #9b772e;
 
@@ -723,22 +704,261 @@ footer {
 
 
 /* =========================================================
-   SMALL TABLET
+   SMALL TABLET / MOBILE CATEGORY SYSTEM
 ========================================================= */
 
 @media (max-width: 850px) {
 
     /*
-        Hide sidebar temporarily so the resource list
-        remains perfectly centered.
+        Mobile/tablet:
+
+        Desktop sidebar becomes a full-width
+        dropdown container.
+
+        The category list is hidden by default.
+        JavaScript adds .mobile-category-open
+        when the user taps the Categories bar.
     */
 
     .sidebar {
+        position: relative;
+
+        left: auto;
+        top: auto;
+
+        width: 100%;
+
+        max-height: none;
+
+        overflow: visible;
+
+        padding: 0;
+
+        margin-bottom: 22px;
+
+        z-index: 10;
+    }
+
+
+    /* =====================================================
+       CLOSED DROPDOWN HEADER
+    ===================================================== */
+
+    .sidebar-title {
+        position: relative;
+
+        width: 100%;
+        height: 46px;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: space-between;
+
+        padding: 0 14px;
+
+        margin: 0;
+
+        background: #fff;
+
+        border: 1px solid var(--border);
+
+        border-radius: 7px;
+
+        color: #222;
+
+        font-size: 11px;
+
+        font-weight: 900;
+
+        letter-spacing: 1px;
+
+        text-transform: uppercase;
+
+        cursor: pointer;
+
+        transition:
+            border-color .15s ease,
+            background .15s ease;
+    }
+
+
+    .sidebar-title:hover {
+        border-color: #d0d0ca;
+    }
+
+
+    /*
+        Dropdown arrow
+    */
+
+    .sidebar-title::after {
+        content: "⌄";
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        width: 20px;
+        height: 20px;
+
+        color: #777;
+
+        font-size: 16px;
+
+        line-height: 1;
+
+        transition: transform .18s ease;
+    }
+
+
+    /*
+        Arrow rotates when opened
+    */
+
+    .sidebar.mobile-category-open .sidebar-title::after {
+        transform: rotate(180deg);
+    }
+
+
+    /* =====================================================
+       DROPDOWN OPEN STATE
+    ===================================================== */
+
+    .sidebar.mobile-category-open {
+        background: #fff;
+
+        border: 1px solid var(--border);
+
+        border-radius: 7px;
+
+        overflow: hidden;
+
+        box-shadow:
+            0 6px 20px rgba(0, 0, 0, 0.06);
+    }
+
+
+    .sidebar.mobile-category-open .sidebar-title {
+        border: 0;
+
+        border-bottom: 1px solid var(--border);
+
+        border-radius: 7px 7px 0 0;
+
+        background: #fff;
+    }
+
+
+    /* =====================================================
+       CATEGORY ITEMS — HIDDEN BY DEFAULT
+    ===================================================== */
+
+    .sidebar .category-block {
         display: none;
     }
 
+
+    /* =====================================================
+       CATEGORY ITEMS — SHOW WHEN OPEN
+    ===================================================== */
+
+    .sidebar.mobile-category-open .category-block {
+        display: block;
+
+        border-bottom: 1px solid #ecece7;
+    }
+
+
+    .sidebar.mobile-category-open .category-block:last-child {
+        border-bottom: 0;
+    }
+
+
+    /* =====================================================
+       CATEGORY BUTTON
+    ===================================================== */
+
+    .sidebar.mobile-category-open .category-button {
+        width: 100%;
+
+        min-height: 42px;
+
+        padding: 0 14px;
+
+        border-radius: 0;
+
+        background: #fff;
+
+        color: #555;
+
+        font-size: 12px;
+
+        font-weight: 400;
+    }
+
+
+    .sidebar.mobile-category-open .category-button:hover {
+        background: #f8f8f6;
+
+        color: #111;
+    }
+
+
+    /*
+        Active category
+    */
+
+    .sidebar.mobile-category-open .category-button.active {
+        background: #fafaf8;
+
+        color: #111;
+
+        font-weight: 800;
+
+        border-left: 2px solid var(--accent);
+    }
+
+
+    /* =====================================================
+       CATEGORY CHEVRON
+    ===================================================== */
+
+    .sidebar.mobile-category-open .chevron {
+        color: #999;
+
+        font-size: 11px;
+    }
+
+
+    /* =====================================================
+       SUBCATEGORIES
+    ===================================================== */
+
+    .sidebar.mobile-category-open .subcategories {
+        padding: 0 0 6px 14px;
+    }
+
+
+    .sidebar.mobile-category-open .subcategory {
+        padding: 7px 10px;
+
+        font-size: 11px;
+
+        border-radius: 4px;
+    }
+
+
+    /* =====================================================
+       RESOURCE CONTENT
+    ===================================================== */
+
     .content {
         width: 730px;
+
         max-width: 100%;
     }
 
@@ -763,6 +983,11 @@ footer {
         padding: 0 15px;
     }
 
+
+    /* =====================================================
+       HERO
+    ===================================================== */
+
     .hero {
         padding: 35px 0 32px;
     }
@@ -777,13 +1002,28 @@ footer {
         font-size: 14px;
     }
 
+
+    /* =====================================================
+       SEARCH
+    ===================================================== */
+
     .search-box {
         width: 100%;
     }
 
+
+    /* =====================================================
+       CONTENT
+    ===================================================== */
+
     .content {
         width: 100%;
     }
+
+
+    /* =====================================================
+       RESOURCE
+    ===================================================== */
 
     .resource {
         padding: 15px 5px;
@@ -801,6 +1041,11 @@ footer {
     .resource-description {
         font-size: 12px;
     }
+
+
+    /* =====================================================
+       FOOTER
+    ===================================================== */
 
     footer {
         width: 100%;
@@ -835,6 +1080,352 @@ footer {
 
     .resource-count {
         font-size: 10px;
+    }
+
+
+    /* Slightly smaller mobile category bar */
+
+    .sidebar-title {
+        height: 44px;
+
+        padding: 0 13px;
+    }
+
+    .sidebar.mobile-category-open .category-button {
+        min-height: 40px;
+
+        padding-left: 13px;
+        padding-right: 13px;
+    }
+
+}
+
+
+/* =========================================================
+   SUBMIT RESOURCE MODAL
+========================================================= */
+
+.submit-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+
+    display: none;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+}
+
+.submit-modal.open {
+    display: flex;
+}
+
+.submit-modal-overlay {
+    position: absolute;
+    inset: 0;
+
+    background: rgba(0, 0, 0, 0.45);
+}
+
+.submit-modal-card {
+    position: relative;
+    z-index: 1;
+
+    width: 100%;
+    max-width: 560px;
+
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+
+    background: #fff;
+
+    border: 1px solid var(--border);
+
+    border-radius: 14px;
+
+    padding: 30px;
+
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.16);
+}
+
+.submit-modal-close {
+    position: absolute;
+
+    top: 14px;
+    right: 16px;
+
+    width: 32px;
+    height: 32px;
+
+    border: 0;
+    background: transparent;
+
+    font-size: 26px;
+    line-height: 1;
+
+    color: #777;
+
+    cursor: pointer;
+}
+
+.submit-modal-close:hover {
+    color: #111;
+}
+
+.submit-modal-header {
+    margin-bottom: 26px;
+}
+
+.submit-modal-eyebrow {
+    font-size: 10px;
+    font-weight: 700;
+
+    letter-spacing: 0.12em;
+
+    color: #777;
+
+    margin-bottom: 8px;
+}
+
+.submit-modal-header h2 {
+    margin: 0 0 8px;
+
+    font-size: 24px;
+    line-height: 1.25;
+}
+
+.submit-modal-header p {
+    margin: 0;
+
+    color: #666;
+
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.submit-field {
+    margin-bottom: 18px;
+}
+
+.submit-field label {
+    display: block;
+
+    margin-bottom: 7px;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    color: #222;
+}
+
+.submit-field label span {
+    color: #d33;
+}
+
+.submit-field input,
+.submit-field textarea,
+.submit-field select {
+    width: 100%;
+
+    box-sizing: border-box;
+
+    border: 1px solid #dcdcdc;
+
+    border-radius: 8px;
+
+    background: #fff;
+
+    color: #111;
+
+    font-family: inherit;
+    font-size: 14px;
+
+    outline: none;
+
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.submit-field input,
+.submit-field select {
+    height: 44px;
+
+    padding: 0 12px;
+}
+
+.submit-field textarea {
+    padding: 11px 12px;
+
+    resize: vertical;
+}
+
+.submit-field input:focus,
+.submit-field textarea:focus,
+.submit-field select:focus {
+    border-color: #999;
+
+    box-shadow:
+        0 0 0 3px rgba(0, 0, 0, 0.04);
+}
+
+.url-check-row {
+    display: flex;
+    gap: 8px;
+}
+
+.url-check-row input {
+    flex: 1;
+    min-width: 0;
+}
+
+#checkUrlButton {
+    flex-shrink: 0;
+
+    height: 44px;
+
+    padding: 0 15px;
+
+    border: 1px solid #111;
+
+    border-radius: 8px;
+
+    background: #111;
+    color: #fff;
+
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+#checkUrlButton:hover {
+    opacity: 0.9;
+}
+
+#checkUrlButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.url-check-message {
+    display: none;
+
+    margin-top: 8px;
+
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.url-check-message.show {
+    display: block;
+}
+
+.url-check-message.success {
+    color: #18794e;
+}
+
+.url-check-message.error {
+    color: #c62828;
+}
+
+.submission-details {
+    opacity: 1;
+}
+
+.submission-details.disabled {
+    opacity: 0.55;
+}
+
+.submission-details input:disabled,
+.submission-details textarea:disabled,
+.submission-details select:disabled {
+    background: #f6f6f6;
+
+    cursor: not-allowed;
+}
+
+.submit-resource-button {
+    width: 100%;
+
+    height: 46px;
+
+    border: 0;
+    border-radius: 8px;
+
+    background: #111;
+    color: #fff;
+
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.submit-resource-button:hover {
+    opacity: 0.9;
+}
+
+.submit-resource-button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.submit-result {
+    display: none;
+
+    margin-top: 16px;
+
+    padding: 12px 14px;
+
+    border-radius: 8px;
+
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.submit-result.show {
+    display: block;
+}
+
+.submit-result.success {
+    background: #eefaf3;
+    color: #18794e;
+}
+
+.submit-result.error {
+    background: #fff1f1;
+    color: #c62828;
+}
+
+
+/* =========================================================
+   SUBMIT MODAL — MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+
+    .submit-modal {
+        padding: 12px;
+    }
+
+    .submit-modal-card {
+        max-height: calc(100vh - 24px);
+
+        padding: 24px 20px;
+    }
+
+    .url-check-row {
+        flex-direction: column;
+    }
+
+    #checkUrlButton {
+        width: 100%;
     }
 
 }

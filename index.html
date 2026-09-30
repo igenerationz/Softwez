@@ -1,49 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Softwez — Free Digital Resources</title>
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Softwez — Free Digital Resources
+    </title>
 
     <meta
         name="description"
         content="Discover free software, AI tools, courses, books, design resources, developer tools and more."
     >
 
+    <meta
+        name="theme-color"
+        content="#ffffff"
+    >
+
     <!-- Main stylesheet -->
-    <link rel="stylesheet" href="style.css">
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
 </head>
 
+
 <body>
+
 
     <!-- =========================================================
          HEADER
     ========================================================== -->
 
     <header>
+
         <div class="header-inner">
 
-            <a href="#" class="logo">
-                Soft<span>wez</span>
-            </a>
 
-            <nav class="nav">
-                <a href="#discover">Discover</a>
-                <a href="#categories">Categories</a>
-                <a href="#about">About</a>
-            </nav>
+            <a
+    href="#"
+    class="logo"
+    aria-label="Softwez home"
+    onclick="goHome(event)"
+>
+    Soft<span>wez</span>
+</a>
+
+
+            <nav
+    class="nav"
+    aria-label="Primary navigation"
+>
+
+    <a href="YOUR_EXTERNAL_LINK_HERE" target="_blank" rel="noopener noreferrer">
+        Gift for You
+    </a>
+
+    <a href="about.html">
+        About
+    </a>
+
+    <a href="contact.html">
+        Contact
+    </a>
+
+</nav>
+
 
             <button
                 type="button"
                 class="submit-btn"
                 onclick="showSubmitMessage()"
+                aria-label="Submit a resource"
             >
                 + Submit
             </button>
 
+
         </div>
+
     </header>
+
 
 
     <!-- =========================================================
@@ -57,22 +102,10 @@
              HERO
         ====================================================== -->
 
-        <section class="hero">
-
-            <div class="eyebrow">
-                THE INTERNET'S FREE SHELF
-            </div>
-
-            <h1>
-                Everything free.<br>
-                In one place.
-            </h1>
-
-            <p>
-                Free software, AI tools, courses, books, datasets,
-                templates, APIs and more — curated into one simple directory.
-            </p>
-
+        <section
+            class="hero"
+            aria-labelledby="heroTitle"
+        >
             <div class="search-box">
 
                 <input
@@ -81,7 +114,9 @@
                     placeholder="Search free resources..."
                     autocomplete="off"
                     aria-label="Search free resources"
+                    enterkeyhint="search"
                 >
+
 
                 <span
                     class="search-icon"
@@ -92,7 +127,9 @@
 
             </div>
 
+
         </section>
+
 
 
         <!-- =====================================================
@@ -109,18 +146,23 @@
             <aside
                 class="sidebar"
                 id="categories"
+                aria-label="Resource categories"
             >
+
 
                 <div class="sidebar-title">
                     Categories
                 </div>
+
 
                 <div
                     class="category-list"
                     id="categoryList"
                 ></div>
 
+
             </aside>
+
 
 
             <!-- =================================================
@@ -130,27 +172,43 @@
             <section
                 class="content"
                 id="discover"
+                aria-labelledby="resourcesTitle"
             >
+
 
                 <div class="content-header">
 
-                    <div class="content-title">
+
+                    <div
+                        class="content-title"
+                        id="resourcesTitle"
+                    >
                         Recommended resources
                     </div>
+
 
                     <div
                         class="resource-count"
                         id="resourceCount"
+                        aria-live="polite"
                     ></div>
+
 
                 </div>
 
 
+
                 <!-- Resource list -->
-                <div id="resourceList"></div>
+
+                <div
+                    id="resourceList"
+                    aria-live="polite"
+                ></div>
+
 
 
                 <!-- Empty state -->
+
                 <div
                     class="empty"
                     id="emptyMessage"
@@ -159,7 +217,9 @@
                 </div>
 
 
+
                 <!-- Load more -->
+
                 <div class="load-more-container">
 
                     <button
@@ -172,9 +232,276 @@
 
                 </div>
 
+
             </section>
 
+
         </div>
+
+
+
+        <!-- =========================================================
+             SUBMIT RESOURCE MODAL
+        ========================================================== -->
+
+        <div
+            class="submit-modal"
+            id="submitModal"
+            aria-hidden="true"
+        >
+
+
+            <div
+                class="submit-modal-overlay"
+                id="submitModalOverlay"
+            ></div>
+
+
+            <div
+                class="submit-modal-card"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="submitModalTitle"
+            >
+
+
+                <button
+                    type="button"
+                    class="submit-modal-close"
+                    id="submitModalClose"
+                    aria-label="Close submission dialog"
+                >
+                    ×
+                </button>
+
+
+
+                <div class="submit-modal-header">
+
+
+                    <div class="submit-modal-eyebrow">
+                        COMMUNITY SUBMISSION
+                    </div>
+
+
+                    <h2 id="submitModalTitle">
+                        Submit a resource
+                    </h2>
+
+
+                    <p>
+                        Share a free resource with the Softwez community.
+                        No account required.
+                    </p>
+
+
+                </div>
+
+
+
+                <form id="submitResourceForm">
+
+
+                    <!-- URL -->
+
+                    <div class="submit-field">
+
+
+                        <label for="submitUrl">
+
+                            Website URL
+
+                            <span aria-hidden="true">
+                                *
+                            </span>
+
+                        </label>
+
+
+                        <div class="url-check-row">
+
+
+                            <input
+                                type="url"
+                                id="submitUrl"
+                                placeholder="https://example.com"
+                                autocomplete="off"
+                                inputmode="url"
+                                required
+                            >
+
+
+                            <button
+                                type="button"
+                                id="checkUrlButton"
+                            >
+                                Check URL
+                            </button>
+
+
+                        </div>
+
+
+                        <div
+                            class="url-check-message"
+                            id="urlCheckMessage"
+                            aria-live="polite"
+                        ></div>
+
+
+                    </div>
+
+
+
+  <!-- DETAILS -->
+
+<div
+    id="submissionDetails"
+    class="submission-details disabled"
+>
+
+
+    <div class="submit-field">
+
+
+        <label for="submitName">
+
+            Tool / Resource Name
+
+            <span aria-hidden="true">
+                *
+            </span>
+
+        </label>
+
+
+        <input
+            type="text"
+            id="submitName"
+            placeholder="Example Tool"
+            maxlength="100"
+            required
+            disabled
+        >
+
+
+    </div>
+
+
+
+    <div class="submit-field">
+
+
+        <label for="submitDescription">
+
+            Description
+
+            <span aria-hidden="true">
+                *
+            </span>
+
+        </label>
+
+
+        <textarea
+            id="submitDescription"
+            placeholder="Briefly describe this resource..."
+            maxlength="200"
+            rows="4"
+            required
+            disabled
+        ></textarea>
+
+
+    </div>
+
+
+
+    <div class="submit-field">
+
+
+        <label for="submitCategory">
+
+            Category
+
+            <span aria-hidden="true">
+                *
+            </span>
+
+        </label>
+
+
+        <select
+            id="submitCategory"
+            required
+            disabled
+        >
+
+            <option value="">
+                Select a category
+            </option>
+
+        </select>
+
+
+    </div>
+
+
+
+    <div class="submit-field">
+
+
+        <label for="submitSubcategory">
+
+            Subcategory
+
+            <span aria-hidden="true">
+                *
+            </span>
+
+        </label>
+
+
+        <select
+            id="submitSubcategory"
+            required
+            disabled
+        >
+
+            <option value="">
+                Select a subcategory
+            </option>
+
+        </select>
+
+
+    </div>
+
+
+
+    <button
+        type="submit"
+        class="submit-resource-button"
+        id="submitResourceButton"
+        disabled
+    >
+        Submit for review
+    </button>
+
+
+</div>
+
+
+
+<div
+    class="submit-result"
+    id="submitResult"
+    aria-live="polite"
+></div>
+
+
+</form>
+
 
 
         <!-- =====================================================
@@ -183,31 +510,54 @@
 
         <footer id="about">
 
+
             <span>
-                <b>Softwez</b> · Free resources, simply listed.
+
+                <b>
+                    Softwez
+                </b>
+
+                · Free resources, simply listed.
+
             </span>
+
 
             <span>
                 Community powered
             </span>
 
+
         </footer>
+
 
     </main>
 
 
+
     <!-- =========================================================
          MAIN JAVASCRIPT
-         
-         IMPORTANT:
+
          All resource data, category data, filtering,
          search, sponsored placement and load-more logic
-         are now inside script.js.
+         are handled inside script.js.
     ========================================================== -->
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="supabase-config.js"></script>
-<script src="script.js" defer></script>
+    <script
+        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+    ></script>
+
+
+    <script
+        src="supabase-config.js"
+    ></script>
+
+
+    <script
+        src="script.js"
+        defer
+    ></script>
+
 
 </body>
+
 </html>

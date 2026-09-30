@@ -724,71 +724,7 @@ let resources = [
    CATEGORY DATA
 ========================================================= */
 
-const categoryData = {
-
-    "AI": [
-        "AI Tools",
-        "AI Models",
-        "AI Writing",
-        "AI Image",
-        "AI Video",
-        "AI Audio",
-        "AI Coding",
-        "AI & Data"
-    ],
-
-    "Software": [
-        "Desktop Apps",
-        "Video Software",
-        "Creative Software",
-        "Utilities",
-        "Productivity"
-    ],
-
-    "Courses": [
-        "Programming",
-        "Business",
-        "Design",
-        "AI & Data",
-        "University Courses"
-    ],
-
-    "Books": [
-        "Ebooks",
-        "Academic",
-        "Public Domain",
-        "Technical"
-    ],
-
-    "Design": [
-        "Templates",
-        "Fonts",
-        "Images",
-        "UI / UX",
-        "Icons"
-    ],
-
-    "Developer": [
-        "Code & Repositories",
-        "API Tools",
-        "Libraries",
-        "Hosting",
-        "Developer Utilities"
-    ],
-
-    "Business": [
-        "Marketing",
-        "Business",
-        "Entrepreneurship"
-    ],
-
-    "Media": [
-        "Stock Media",
-        "Music"
-    ]
-
-};
-
+let categoryData = {};
 
 /* =========================================================
    STATE
@@ -818,7 +754,27 @@ let visibleLimit = 50;
 */
 let activeSearchQuery = "";
 
+function goHome(event) {
+    event.preventDefault();
 
+    activeSearchQuery = "";
+    activeCategory = "All";
+    activeSubcategory = "All resources";
+    openCategory = null;
+    visibleLimit = 50;
+
+    if (searchInput) {
+        searchInput.value = "";
+    }
+
+    renderCategories();
+    renderResources();
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+}
 /* =========================================================
    ELEMENTS
 ========================================================= */
@@ -1110,19 +1066,20 @@ function getFilteredResources() {
            CATEGORY FILTER
         ================================================== */
 
-        const categoryMatch =
-            activeCategory === "All" ||
-            resource.category === activeCategory;
+  const categoryMatch =
+    activeCategory === "All" ||
+    String(resource.category || "").trim().toLowerCase() ===
+    String(activeCategory || "").trim().toLowerCase();
 
 
-        /* =================================================
-           SUBCATEGORY FILTER
-        ================================================== */
+/* =================================================
+   SUBCATEGORY FILTER
+================================================= */
 
-        const subcategoryMatch =
-            activeSubcategory === "All resources" ||
-            resource.subcategory === activeSubcategory;
-
+const subcategoryMatch =
+    activeSubcategory === "All resources" ||
+    String(resource.subcategory || "").trim().toLowerCase() ===
+    String(activeSubcategory || "").trim().toLowerCase();
 
         /* =================================================
            SEARCH
@@ -1167,24 +1124,501 @@ function getFilteredResources() {
    CREATE RESOURCE URL
 ========================================================= */
 
-function getResourceUrl(domain) {
+function getResourceUrl(url) {
 
-    if (!domain) {
+    if (!url) {
+        return "#";
+    }
+
+    const value = String(url).trim();
+
+    if (!value) {
         return "#";
     }
 
     if (
-        domain.startsWith("http://") ||
-        domain.startsWith("https://")
+        value.startsWith("http://") ||
+        value.startsWith("https://")
     ) {
-        return domain;
+        return value;
     }
 
-    return `https://${domain}`;
+    return `https://${value}`;
+}
+
+
+/* =========================================================
+   OUTPUT SAFETY
+========================================================= */
+
+function escapeHTML(value) {
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+function escapeAttribute(value) {
+    return escapeHTML(value)
+        .replace(/`/g, "&#096;");
+}
+
+async function loadAffiliateLinks() {
+
+    try {
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("affiliate_links")
+            .select(
+                "tool_id, affiliate_url, is_active"
+            )
+            .eq(
+                "is_active",
+                true
+            );
+
+        if (error) {
+            throw error;
+        }
+
+        window.softwezAffiliateLinks =
+            {};
+
+        (data || []).forEach(
+            item => {
+
+                window.softwezAffiliateLinks[
+                    item.tool_id
+                ] =
+                    item.affiliate_url;
+
+            }
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Affiliate links loading error:",
+            error
+        );
+
+        window.softwezAffiliateLinks =
+            {};
+
+    }
+
+}
+/* =========================================================
+   AD NETWORKS
+========================================================= */
+
+async function loadAdNetworks() {
+
+    try {
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("ad_networks")
+            .select(
+                "id, name, code, is_active"
+            )
+            .eq(
+                "is_active",
+                true
+            );
+
+        if (error) {
+            throw error;
+        }
+
+        window.softwezAdNetworks =
+            data || [];
+
+    } catch (error) {
+
+        console.error(
+            "Ad network loading error:",
+            error
+        );
+
+        window.softwezAdNetworks =
+            [];
+    }
+
+}
+/* =========================================================
+   SPONSORED CAMPAIGNS
+========================================================= */
+
+let sponsoredCampaigns = [];
+
+
+/* =========================================================
+   CHECK ACTIVE CAMPAIGN
+========================================================= */
+
+function isSponsoredCampaignActive(campaign) {
+
+    if (!campaign || campaign.is_active !== true) {
+        return false;
+    }
+
+    const now = new Date();
+
+    if (
+        campaign.start_at &&
+        now < new Date(campaign.start_at)
+    ) {
+        return false;
+    }
+
+    if (
+        campaign.end_at &&
+        now > new Date(campaign.end_at)
+    ) {
+        return false;
+    }
+
+    if (
+        campaign.click_limit !== null &&
+        campaign.click_limit !== undefined &&
+        Number(campaign.clicks || 0) >=
+        Number(campaign.click_limit)
+    ) {
+        return false;
+    }
+
+    return true;
+}
+
+
+/* =========================================================
+   LOAD SPONSORED CAMPAIGNS
+========================================================= */
+
+async function loadSponsoredCampaigns() {
+
+    try {
+
+        const { data, error } =
+            await supabaseClient
+                .from("sponsored_campaigns")
+                .select(`
+                    id,
+                    tool_id,
+                    campaign_type,
+                    start_at,
+                    end_at,
+                    click_limit,
+                    impressions,
+                    clicks,
+                    is_active,
+                    tools (
+                        id,
+                        name,
+                        description,
+                        link,
+                        category
+                    )
+                `)
+                .eq("is_active", true);
+
+        if (error) {
+            throw error;
+        }
+
+        sponsoredCampaigns =
+            (data || [])
+                .filter(isSponsoredCampaignActive)
+                .filter(campaign =>
+                    campaign.tools &&
+                    campaign.tools.id
+                );
+
+    } catch (error) {
+
+        console.error(
+            "Sponsored campaign loading error:",
+            error
+        );
+
+        sponsoredCampaigns = [];
+    }
 
 }
 
 
+/* =========================================================
+   SHUFFLE SPONSORED CAMPAIGNS
+========================================================= */
+
+function shuffleSponsoredCampaigns(list) {
+
+    const array = [...list];
+
+    for (
+        let i = array.length - 1;
+        i > 0;
+        i--
+    ) {
+
+        const j =
+            Math.floor(
+                Math.random() * (i + 1)
+            );
+
+        [
+            array[i],
+            array[j]
+        ] = [
+            array[j],
+            array[i]
+        ];
+
+    }
+
+    return array;
+}
+
+
+/* =========================================================
+   TRACK SPONSORED IMPRESSION
+========================================================= */
+
+async function trackSponsoredImpression(
+    campaignId
+) {
+
+    if (!campaignId) {
+        return;
+    }
+
+    try {
+
+        await supabaseClient.rpc(
+            "track_campaign_impression",
+            {
+                p_campaign_id: campaignId
+            }
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Sponsored impression tracking error:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   TRACK SPONSORED CLICK
+========================================================= */
+
+async function trackSponsoredClick(
+    campaignId
+) {
+
+    if (!campaignId) {
+        return;
+    }
+
+    try {
+
+        await supabaseClient.rpc(
+            "track_campaign_click",
+            {
+                p_campaign_id: campaignId
+            }
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Sponsored click tracking error:",
+            error
+        );
+
+    }
+
+}
+
+/* =========================================================
+   BUILD UNIFIED SPONSORED CONTENT
+========================================================= */
+
+function buildSponsoredContent(filteredResources) {
+
+    const sponsoredContent = [];
+
+    const campaignToolIds =
+        new Set(
+            sponsoredCampaigns
+                .filter(isSponsoredCampaignActive)
+                .map(campaign => campaign.tool_id)
+        );
+
+
+    /* =====================================================
+       1. SPONSORED CAMPAIGNS
+    ====================================================== */
+
+    sponsoredCampaigns
+        .filter(isSponsoredCampaignActive)
+        .forEach(campaign => {
+
+            const tool =
+                filteredResources.find(
+                    resource =>
+                        resource.id === campaign.tool_id
+                );
+
+            if (!tool) {
+                return;
+            }
+
+            sponsoredContent.push({
+
+                type: "sponsored",
+
+                id: tool.id,
+
+                tool_id: tool.id,
+
+                name: tool.name,
+
+                domain: tool.domain,
+
+                link: tool.link,
+
+                description: tool.description,
+
+                category: tool.category,
+
+                subcategory: tool.subcategory,
+
+                tag: tool.tag,
+
+                campaignId: campaign.id,
+
+                sponsored: true
+
+            });
+
+        });
+
+
+    /* =====================================================
+       2. AFFILIATE
+    ====================================================== */
+
+    filteredResources
+        .filter(resource =>
+            window.softwezAffiliateLinks &&
+            window.softwezAffiliateLinks[
+                resource.id
+            ] &&
+            !campaignToolIds.has(resource.id)
+        )
+        .forEach(resource => {
+
+            sponsoredContent.push({
+
+                type: "affiliate",
+
+                id: resource.id,
+
+                tool_id: resource.id,
+
+                name: resource.name,
+
+                domain: resource.domain,
+
+                link:
+                    window.softwezAffiliateLinks[
+                        resource.id
+                    ],
+
+                description: resource.description,
+
+                category: resource.category,
+
+                subcategory: resource.subcategory,
+
+                tag: resource.tag,
+
+                campaignId: null,
+
+                sponsored: true
+
+            });
+
+        });
+
+
+    /* =====================================================
+       3. AD NETWORK
+    ====================================================== */
+
+    (window.softwezAdNetworks || [])
+    .filter(adNetwork =>
+        adNetwork &&
+        typeof adNetwork.code === "string" &&
+        adNetwork.code.trim() !== ""
+    )
+    .forEach(adNetwork => {
+
+        sponsoredContent.push({
+
+                type: "ad_network",
+
+                id:
+                    `ad-network-${adNetwork.id}`,
+
+                tool_id: null,
+
+                name:
+                    adNetwork.name || "Advertisement",
+
+                domain: "",
+
+                link: "#",
+
+                description: "",
+
+                category: "",
+
+                subcategory: "Sponsored",
+
+                tag: "Sponsored",
+
+                campaignId: null,
+
+                adNetwork: true,
+
+                adCode:
+                    adNetwork.code || "",
+
+                sponsored: true
+
+            });
+
+        });
+
+
+    return sponsoredContent;
+
+}
 /* =========================================================
    RENDER RESOURCES
 ========================================================= */
@@ -1196,29 +1630,13 @@ function renderResources() {
 
 
     /* =====================================================
-       VISIBLE RESOURCES
-    ====================================================== */
-
-    const visible =
-        filtered.slice(
-            0,
-            visibleLimit
-        );
-
-
-    /* =====================================================
-       COUNT
-    ====================================================== */
-
-    resourceCount.textContent =
-        `${filtered.length} resources`;
-
-
-    /* =====================================================
        EMPTY STATE
     ====================================================== */
 
     if (filtered.length === 0) {
+
+        resourceCount.textContent =
+            "0 resources";
 
         resourceList.innerHTML = "";
 
@@ -1236,113 +1654,636 @@ function renderResources() {
         "none";
 
 
+ /* =====================================================
+   UNIFIED SPONSORED CONTENT
+===================================================== */
+
+const sponsoredItems =
+    buildSponsoredContent(
+        filtered
+    );
+
+
+const shuffledSponsoredContent =
+    shuffleSponsoredCampaigns(
+        sponsoredItems
+    );
+
     /* =====================================================
-       BUILD RESOURCE HTML
+   NORMAL RESOURCES
+===================================================== */
+
+const sponsoredToolIds =
+    new Set(
+        sponsoredItems
+            .filter(item =>
+                item.type !== "ad_network"
+            )
+            .map(item =>
+                item.tool_id
+            )
+    );
+
+
+/* =====================================================
+   PREVENT DUPLICATE SPONSORED TOOLS
+===================================================== */
+
+const normalResources =
+    filtered.filter(
+        resource =>
+            !sponsoredToolIds.has(
+                resource.id
+            )
+    );
+
+
+/* =====================================================
+   BUILD FINAL LIST
+===================================================== */
+
+const finalResources = [];
+
+let normalIndex = 0;
+let sponsoredIndex = 0;
+
+const maxItems =
+    visibleLimit;
+
+
+/* =====================================================
+   RANDOM SPONSORED INTERVAL
+
+   First sponsored item appears after
+   3–4 normal resources.
+
+   After that, every sponsored item
+   appears after another 3–4 normal resources.
+===================================================== */
+
+let nextSponsoredAfter =
+    3 + Math.floor(
+        Math.random() * 2
+    );
+
+
+while (
+    finalResources.length <
+        maxItems &&
+    (
+        normalIndex <
+            normalResources.length ||
+        sponsoredIndex <
+            shuffledSponsoredContent.length
+    )
+) {
+
+
+    /* =================================================
+       ADD NORMAL RESOURCE
+    ================================================= */
+
+    if (
+        normalIndex <
+        normalResources.length
+    ) {
+
+        finalResources.push({
+
+            ...normalResources[
+                normalIndex
+            ],
+
+            sponsored: false,
+
+            campaignId: null
+
+        });
+
+        normalIndex++;
+
+
+        /*
+            After 3–4 normal resources,
+            insert sponsored content.
+        */
+
+        if (
+    normalIndex >=
+        nextSponsoredAfter &&
+    shuffledSponsoredContent.length > 0
+) {
+
+    const sponsoredItem =
+        shuffledSponsoredContent[
+            sponsoredIndex %
+            shuffledSponsoredContent.length
+        ];
+
+    finalResources.push(
+        sponsoredItem
+    );
+
+    sponsoredIndex++;
+
+    nextSponsoredAfter =
+        normalIndex +
+        3 +
+        Math.floor(
+            Math.random() * 2
+        );
+
+}
+
+    } else {
+
+        /*
+            No normal resources left.
+            Add remaining sponsored content.
+        */
+
+        if (
+            sponsoredIndex <
+            shuffledSponsoredContent.length
+        ) {
+
+            finalResources.push(
+                shuffledSponsoredContent[
+                    sponsoredIndex
+                ]
+            );
+
+            sponsoredIndex++;
+
+        } else {
+
+            break;
+
+        }
+
+    }
+
+}
+
+
+    /* =====================================================
+       COUNT
     ====================================================== */
 
-    let html = "";
+    resourceCount.textContent =
+        `${filtered.length} resources`;
 
 
-    visible.forEach(
-        (resource, index) => {
+    /* =====================================================
+   BUILD HTML
+===================================================== */
+
+let html = "";
 
 
-            /*
-                SPONSORED PATTERN
+finalResources.forEach(
+    resource => {
 
-                Position 1  = Sponsored
-                Position 2-5 = Normal
-                Position 6  = Sponsored
-                Position 7-10 = Normal
-                Position 11 = Sponsored
+        const isSponsored =
+            resource.sponsored === true;
 
-                Pattern:
+        const isAdNetwork =
+            resource.adNetwork === true;
 
-                Sponsored
-                Normal
-                Normal
-                Normal
-                Normal
-                Sponsored
-                Normal
-                Normal
-                Normal
-                Normal
-                Sponsored
-                ...
-            */
 
-            const isSponsored =
-                index === 0 ||
-                index % 5 === 0;
+        /* =================================================
+           AD NETWORK
+        ================================================== */
 
+        if (isAdNetwork) {
 
             html += `
-                <a
-                    class="resource ${
-                        isSponsored
-                            ? "sponsored"
-                            : ""
-                    }"
-                    href="${getResourceUrl(resource.domain)}"
-                    target="_blank"
-                    rel="noopener noreferrer"
+
+                <div
+                    class="resource sponsored ad-network-resource"
+                    data-ad-network="true"
                 >
 
+                    <div class="sponsored-label">
+                        Sponsored
+                    </div>
+
+                    <div class="ad-network-content">
+                        ${resource.adCode || ""}
+                    </div>
+
+                </div>
+
+            `;
+
+            return;
+
+        }
+
+
+        /* =================================================
+           NORMAL + SPONSORED + AFFILIATE
+        ================================================== */
+
+        html += `
+
+            <a
+                class="resource ${
+                    isSponsored
+                        ? "sponsored"
+                        : ""
+                }"
+
+                href="${escapeAttribute(
+                    getResourceUrl(
+                        resource.link ||
+                        resource.domain
+                    )
+                )}"
+
+                target="_blank"
+
+                rel="noopener noreferrer"
+
+                onclick="
                     ${
-                        isSponsored
-                            ? `
-                                <div class="sponsored-label">
-                                    Sponsored Resource
-                                </div>
-                            `
+                        resource.campaignId
+                            ? `trackSponsoredClick('${escapeAttribute(
+                                  resource.campaignId
+                              )}')`
                             : ""
                     }
 
+                    trackToolClick('${escapeAttribute(
+                        resource.id || ""
+                    )}')
+                "
+            >
 
-                    <div class="resource-title-row">
-
-                        <span class="resource-title">
-                            ${resource.name}
-                        </span>
-
-                        <span class="resource-domain">
-                            ${resource.domain}
-                        </span>
-
-                    </div>
-
-
-                    <div class="resource-description">
-                        ${resource.description}
-                    </div>
+                ${
+                    isSponsored
+                        ? `
+                            <div class="sponsored-label">
+                                Sponsored
+                            </div>
+                        `
+                        : ""
+                }
 
 
-                    <div class="resource-tags">
+                <div class="resource-title-row">
 
-                        <span class="tag">
-                            ${resource.category}
-                        </span>
+                    <span class="resource-title">
+                        ${escapeHTML(
+                            resource.name
+                        )}
+                    </span>
 
-                        <span class="tag">
-                            ${resource.tag}
-                        </span>
+                    <span class="resource-domain">
+                        ${escapeHTML(
+                            resource.domain
+                        )}
+                    </span>
 
-                    </div>
+                </div>
 
-                </a>
-            `;
+
+                <div class="resource-description">
+                    ${escapeHTML(
+                        resource.description
+                    )}
+                </div>
+
+            </a>
+
+        `;
+
+    }
+);
+
+
+    resourceList.innerHTML =
+    html;
+
+
+/* =====================================================
+   EXECUTE AD NETWORK SCRIPTS
+===================================================== */
+
+resourceList
+    .querySelectorAll(
+        ".ad-network-content script"
+    )
+    .forEach(
+        oldScript => {
+
+            const newScript =
+                document.createElement(
+                    "script"
+                );
+
+
+            /* Copy attributes */
+
+            Array.from(
+                oldScript.attributes
+            ).forEach(
+                attribute => {
+
+                    newScript.setAttribute(
+                        attribute.name,
+                        attribute.value
+                    );
+
+                }
+            );
+
+
+            /* Copy inline script */
+
+            newScript.textContent =
+                oldScript.textContent;
+
+
+            /* Replace old script */
+
+            oldScript.parentNode.replaceChild(
+                newScript,
+                oldScript
+            );
 
         }
     );
 
+/* =====================================================
+   DEBUG AD NETWORK
+===================================================== */
 
-    resourceList.innerHTML =
-        html;
+setTimeout(() => {
+
+    resourceList
+        .querySelectorAll(
+            ".ad-network-resource"
+        )
+        .forEach(
+            (adContainer, index) => {
+
+                const adContent =
+                    adContainer.querySelector(
+                        ".ad-network-content"
+                    );
+
+                console.log(
+                    "SOFTWEZ AD DEBUG",
+                    index,
+                    {
+                        html:
+                            adContent
+                                ? adContent.innerHTML
+                                : null,
+
+                        text:
+                            adContent
+                                ? adContent.textContent
+                                : null,
+
+                        children:
+                            adContent
+                                ? adContent.children.length
+                                : 0,
+
+                        height:
+                            adContent
+                                ? adContent.offsetHeight
+                                : 0,
+
+                        width:
+                            adContent
+                                ? adContent.offsetWidth
+                                : 0
+                    }
+                );
+
+            }
+        );
+
+}, 3000);
+/* =====================================================
+   REMOVE EMPTY / UNFILLED AD NETWORK SLOTS
+===================================================== */
+
+setTimeout(() => {
+
+    resourceList
+        .querySelectorAll(
+            ".ad-network-resource"
+        )
+        .forEach(
+            adContainer => {
+
+                const adContent =
+                    adContainer.querySelector(
+                        ".ad-network-content"
+                    );
+
+
+                if (!adContent) {
+
+                    adContainer.remove();
+
+                    return;
+
+                }
+
+
+                /* =========================================
+                   GOOGLE ADSENSE — UNFILLED
+                ========================================== */
+
+                const unfilled =
+                    adContent.querySelector(
+                        "[data-ad-status='unfilled']"
+                    );
+
+
+                if (unfilled) {
+
+                    adContainer.remove();
+
+                    return;
+
+                }
+
+
+                /* =========================================
+                   TEXT CONTENT
+                ========================================== */
+
+                if (
+                    adContent.textContent
+                        .trim()
+                        .length > 0
+                ) {
+
+                    return;
+
+                }
+
+
+                /* =========================================
+                   REAL MEDIA CONTENT
+                ========================================== */
+
+                const images =
+                    adContent.querySelectorAll(
+                        "img"
+                    );
+
+                const videos =
+                    adContent.querySelectorAll(
+                        "video"
+                    );
+
+                const canvases =
+                    adContent.querySelectorAll(
+                        "canvas"
+                    );
+
+                const svgs =
+                    adContent.querySelectorAll(
+                        "svg"
+                    );
+
+                const objects =
+                    adContent.querySelectorAll(
+                        "object"
+                    );
+
+                const embeds =
+                    adContent.querySelectorAll(
+                        "embed"
+                    );
+
+
+                /* =========================================
+                   CHECK VISIBLE ELEMENTS
+                ========================================== */
+
+                const hasVisibleMedia =
+                    [
+                        ...images,
+                        ...videos,
+                        ...canvases,
+                        ...svgs,
+                        ...objects,
+                        ...embeds
+                    ].some(
+                        element => {
+
+                            const rect =
+                                element.getBoundingClientRect();
+
+                            return (
+                                rect.width > 1 &&
+                                rect.height > 1
+                            );
+
+                        }
+                    );
+
+
+                if (hasVisibleMedia) {
+
+                    return;
+
+                }
+
+
+                /* =========================================
+                   IFRAME CHECK
+                ========================================== */
+
+                const iframes =
+                    adContent.querySelectorAll(
+                        "iframe"
+                    );
+
+
+                const hasVisibleIframe =
+                    Array.from(
+                        iframes
+                    ).some(
+                        iframe => {
+
+                            const rect =
+                                iframe.getBoundingClientRect();
+
+                            return (
+                                rect.width > 1 &&
+                                rect.height > 1
+                            );
+
+                        }
+                    );
+
+
+                /*
+                    IMPORTANT:
+
+                    A blank iframe can exist even when
+                    the ad network returned no ad.
+
+                    Therefore an iframe alone is NOT
+                    considered proof of a filled ad.
+                */
+
+                if (!hasVisibleIframe) {
+
+                    adContainer.remove();
+
+                    return;
+
+                }
+
+
+                /* =========================================
+                   FALLBACK
+                ========================================== */
+
+                if (
+                    adContent.children.length === 0
+                ) {
+
+                    adContainer.remove();
+
+                }
+
+            }
+        );
+
+}, 8000);
+    /* =====================================================
+       TRACK IMPRESSIONS
+    ====================================================== */
+
+    finalResources
+        .filter(
+            resource =>
+                resource.sponsored === true
+        )
+        .forEach(
+            resource => {
+
+                trackSponsoredImpression(
+                    resource.campaignId
+                );
+
+            }
+        );
 
 
     /* =====================================================
-       LOAD MORE BUTTON
+       LOAD MORE
     ====================================================== */
 
     if (
@@ -1431,16 +2372,692 @@ loadMoreButton.addEventListener(
 
 
 /* =========================================================
-   SUBMIT BUTTON
+   RESOURCE SUBMISSION
+========================================================= */
+
+const submitModal =
+    document.getElementById("submitModal");
+
+const submitModalOverlay =
+    document.getElementById("submitModalOverlay");
+
+const submitModalClose =
+    document.getElementById("submitModalClose");
+
+const submitResourceForm =
+    document.getElementById("submitResourceForm");
+
+const submitUrl =
+    document.getElementById("submitUrl");
+
+const checkUrlButton =
+    document.getElementById("checkUrlButton");
+
+const urlCheckMessage =
+    document.getElementById("urlCheckMessage");
+
+const submissionDetails =
+    document.getElementById("submissionDetails");
+
+const submitName =
+    document.getElementById("submitName");
+
+const submitDescription =
+    document.getElementById("submitDescription");
+
+const submitCategory =
+    document.getElementById("submitCategory");
+
+const submitSubcategory =
+    document.getElementById("submitSubcategory");
+
+const submitResourceButton =
+    document.getElementById("submitResourceButton");
+
+const submitResult =
+    document.getElementById("submitResult");
+
+
+let checkedSubmissionDomain = null;
+let submissionUrlApproved = false;
+
+
+/* =========================================================
+   OPEN MODAL
 ========================================================= */
 
 function showSubmitMessage() {
 
-    alert(
-        "The resource submission system will be connected later."
+    submitModal.classList.add("open");
+
+    submitModal.setAttribute(
+        "aria-hidden",
+        "false"
+    );
+
+    resetSubmissionForm();
+
+    setTimeout(() => {
+
+        submitUrl.focus();
+
+    }, 50);
+
+}
+
+
+/* =========================================================
+   CLOSE MODAL
+========================================================= */
+
+function closeSubmitModal() {
+
+    submitModal.classList.remove("open");
+
+    submitModal.setAttribute(
+        "aria-hidden",
+        "true"
     );
 
 }
+
+
+/* =========================================================
+   RESET FORM
+========================================================= */
+
+function resetSubmissionForm() {
+
+    submitResourceForm.reset();
+
+    checkedSubmissionDomain = null;
+
+    submissionUrlApproved = false;
+
+    urlCheckMessage.textContent = "";
+
+    urlCheckMessage.className =
+        "url-check-message";
+
+    submitResult.textContent = "";
+
+    submitResult.className =
+        "submit-result";
+
+    submissionDetails.classList.add(
+        "disabled"
+    );
+
+    submitName.disabled = true;
+
+    submitDescription.disabled = true;
+
+    submitCategory.disabled = true;
+
+    submitResourceButton.disabled = true;
+
+    checkUrlButton.disabled = false;
+
+    checkUrlButton.textContent =
+        "Check URL";
+
+    populateSubmissionCategories();
+
+}
+
+
+/* =========================================================
+   POPULATE CATEGORIES
+========================================================= */
+
+function populateSubmissionCategories() {
+
+    if (!submitCategory) {
+        return;
+    }
+
+    submitCategory.innerHTML = `
+        <option value="">
+            Select a category
+        </option>
+    `;
+
+    Object.keys(categoryData).forEach(
+        category => {
+
+            const option =
+                document.createElement("option");
+
+            option.value = category;
+
+            option.textContent = category;
+
+            submitCategory.appendChild(
+                option
+            );
+
+        }
+    );
+
+}
+function populateSubmissionSubcategories() {
+
+    if (!submitSubcategory) {
+        return;
+    }
+
+    const selectedCategory =
+        submitCategory?.value || "";
+
+    submitSubcategory.innerHTML = `
+        <option value="">
+            Select a subcategory
+        </option>
+    `;
+
+    if (!selectedCategory) {
+
+        submitSubcategory.disabled = true;
+
+        return;
+    }
+
+    const subcategories =
+        categoryData[selectedCategory] || [];
+
+    if (!subcategories.length) {
+
+        submitSubcategory.innerHTML = `
+            <option value="">
+                No subcategories available
+            </option>
+        `;
+
+        submitSubcategory.disabled = true;
+
+        return;
+    }
+
+    subcategories.forEach(
+        subcategory => {
+
+            const option =
+                document.createElement("option");
+
+            option.value =
+                subcategory;
+
+            option.textContent =
+                subcategory;
+
+            submitSubcategory.appendChild(
+                option
+            );
+
+        }
+    );
+
+    submitSubcategory.disabled = false;
+}
+
+submitCategory.addEventListener(
+    "change",
+    populateSubmissionSubcategories
+);
+
+/* =========================================================
+   SHOW URL MESSAGE
+========================================================= */
+
+function showUrlCheckMessage(
+    message,
+    type
+) {
+
+    urlCheckMessage.textContent =
+        message;
+
+    urlCheckMessage.className =
+        `url-check-message show ${type}`;
+
+}
+
+
+/* =========================================================
+   CHECK URL
+========================================================= */
+
+async function checkSubmissionUrl() {
+
+    const url =
+        submitUrl.value.trim();
+
+    if (!url) {
+
+        showUrlCheckMessage(
+            "Please enter a website URL.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    checkUrlButton.disabled = true;
+
+    checkUrlButton.textContent =
+        "Checking...";
+
+    submissionUrlApproved = false;
+
+    checkedSubmissionDomain = null;
+
+    submissionDetails.classList.add(
+        "disabled"
+    );
+
+    submitName.disabled = true;
+
+    submitDescription.disabled = true;
+
+    submitCategory.disabled = true;
+
+    submitResourceButton.disabled = true;
+
+
+    try {
+
+        const {
+    data,
+    error
+} = await supabaseClient
+    .from("tools")
+    .select("id, link")
+    .eq("link", url)
+    .limit(1);
+
+if (error) {
+    throw error;
+}
+
+if (data && data.length > 0) {
+
+    showUrlCheckMessage(
+        "This URL is already available on Softwez.",
+        "error"
+    );
+
+    checkUrlButton.disabled = false;
+
+    checkUrlButton.textContent =
+        "Check URL";
+
+    return;
+}
+
+
+/* URL is not already available on Softwez */
+
+submissionUrlApproved = true;
+
+try {
+    checkedSubmissionDomain =
+        new URL(url).hostname
+            .replace(/^www\./, "");
+} catch {
+    checkedSubmissionDomain = "";
+}
+
+
+showUrlCheckMessage(
+    "✓ URL is available for submission.",
+    "success"
+);
+
+
+submissionDetails.classList.remove(
+    "disabled"
+);
+
+submitName.disabled = false;
+
+submitDescription.disabled = false;
+
+submitCategory.disabled = false;
+
+submitResourceButton.disabled = false;
+
+checkUrlButton.disabled = false;
+
+checkUrlButton.textContent =
+    "Checked";
+
+        checkedSubmissionDomain =
+            data.normalized_domain;
+
+
+        showUrlCheckMessage(
+            "✓ URL is available for submission.",
+            "success"
+        );
+
+
+        submissionDetails.classList.remove(
+            "disabled"
+        );
+
+        submitName.disabled = false;
+
+        submitDescription.disabled = false;
+
+        submitCategory.disabled = false;
+
+        submitResourceButton.disabled = false;
+
+        checkUrlButton.disabled = false;
+
+        checkUrlButton.textContent =
+            "Checked";
+
+
+    } catch (error) {
+
+        console.error(
+            "URL checking error:",
+            error
+        );
+
+
+        showUrlCheckMessage(
+            "Unable to check this URL right now. Please try again.",
+            "error"
+        );
+
+
+        checkUrlButton.disabled = false;
+
+        checkUrlButton.textContent =
+            "Check URL";
+
+    }
+
+}
+
+
+/* =========================================================
+   URL CHECK BUTTON
+========================================================= */
+
+checkUrlButton.addEventListener(
+    "click",
+    checkSubmissionUrl
+);
+
+
+/* =========================================================
+   URL ENTER KEY
+========================================================= */
+
+submitUrl.addEventListener(
+    "keydown",
+    event => {
+
+        if (event.key !== "Enter") {
+            return;
+        }
+
+        event.preventDefault();
+
+        checkSubmissionUrl();
+
+    }
+);
+
+
+/* =========================================================
+   URL CHANGE
+   Re-check required if visitor changes URL
+========================================================= */
+
+submitUrl.addEventListener(
+    "input",
+    () => {
+
+        submissionUrlApproved = false;
+
+        checkedSubmissionDomain = null;
+
+        submissionDetails.classList.add(
+            "disabled"
+        );
+
+        submitName.disabled = true;
+
+        submitDescription.disabled = true;
+
+        submitCategory.disabled = true;
+
+        submitResourceButton.disabled = true;
+
+        urlCheckMessage.textContent = "";
+
+        urlCheckMessage.className =
+            "url-check-message";
+
+        checkUrlButton.disabled = false;
+
+        checkUrlButton.textContent =
+            "Check URL";
+
+    }
+);
+
+
+/* =========================================================
+   SUBMIT RESOURCE
+========================================================= */
+
+submitResourceForm.addEventListener(
+    "submit",
+    async event => {
+
+        event.preventDefault();
+
+
+        if (!submissionUrlApproved) {
+
+            showUrlCheckMessage(
+                "Please check and verify your website URL first.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        const name =
+            submitName.value.trim();
+
+        const description =
+            submitDescription.value.trim();
+
+        const category =
+            submitCategory.value;
+
+        const subcategory =
+             submitSubcategory.value;
+
+
+        if (!name) {
+
+            submitName.focus();
+
+            return;
+
+        }
+
+
+        if (!description) {
+
+            submitDescription.focus();
+
+            return;
+
+        }
+
+
+        if (!category) {
+
+            submitCategory.focus();
+
+            return;
+
+        }
+
+        if (!subcategory) {
+
+            submitSubcategory.focus();
+
+            return;
+
+}
+
+
+        submitResourceButton.disabled = true;
+
+        submitResourceButton.textContent =
+            "Submitting...";
+
+
+        submitResult.textContent = "";
+
+        submitResult.className =
+            "submit-result";
+
+
+        try {
+
+            const {
+                error
+            } = await supabaseClient
+                .from("tool_submissions")
+                .insert([
+                    {
+                        name: name,
+                        description: description,
+                        url: submitUrl.value.trim(),
+                        normalized_domain:
+    new URL(
+        submitUrl.value.trim()
+    ).hostname.replace(
+        /^www\./,
+        ""
+    ),
+                        category: category,
+                        subcategory: subcategory,
+                        status: "pending"
+                    }
+                ]);
+
+
+            if (error) {
+                throw error;
+            }
+
+
+            submitResult.textContent =
+                "✓ Submitted successfully. Your resource is now pending review by the Softwez team.";
+
+            submitResult.className =
+                "submit-result show success";
+
+
+            submitResourceForm.reset();
+
+            submissionUrlApproved = false;
+
+            checkedSubmissionDomain = null;
+
+
+            submissionDetails.classList.add(
+                "disabled"
+            );
+
+            submitName.disabled = true;
+
+            submitDescription.disabled = true;
+
+            submitCategory.disabled = true;
+
+            submitSubcategory.disabled = true;
+
+            submitResourceButton.disabled = true;
+
+            checkUrlButton.textContent =
+                "Check URL";
+
+
+        } catch (error) {
+
+            console.error(
+                "Submission error:",
+                error
+            );
+
+
+            submitResult.textContent =
+                "Unable to submit this resource right now. Please try again.";
+
+            submitResult.className =
+                "submit-result show error";
+
+
+        } finally {
+
+            submitResourceButton.disabled =
+                true;
+
+            submitResourceButton.textContent =
+                "Submit for review";
+
+        }
+
+    }
+);
+
+/* =========================================================
+   CLOSE EVENTS
+========================================================= */
+
+submitModalClose.addEventListener(
+    "click",
+    closeSubmitModal
+);
+
+
+submitModalOverlay.addEventListener(
+    "click",
+    closeSubmitModal
+);
+
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.key === "Escape" &&
+            submitModal.classList.contains("open")
+        ) {
+
+            closeSubmitModal();
+
+        }
+
+    }
+);
 
 
 /* =========================================================
@@ -1456,7 +3073,7 @@ async function loadResources() {
                 .from("tools")
                 .select("*")
                 .order("created_at", {
-                    ascending: true
+                    ascending: false
                 });
 
 
@@ -1488,6 +3105,8 @@ async function loadResources() {
 
                     name:
                         tool.name || "",
+                    id:
+                       tool.id,
 
                     domain,
 
@@ -1498,13 +3117,13 @@ async function loadResources() {
                         tool.category || "",
 
                     subcategory:
-                        "All resources",
+                        tool.subcategory || "All resources",
 
                     description:
                         tool.description || "",
 
                     tag:
-                        tool.category || ""
+                        tool.tag || tool.category || ""
 
                 };
 
@@ -1549,4 +3168,221 @@ async function loadResources() {
    INITIALIZE
 ========================================================= */
 
-loadResources();
+async function loadCategories() {
+
+    const { data, error } = await supabaseClient
+        .from("categories")
+        .select(`
+            id,
+            name,
+            subcategories (
+                id,
+                name
+            )
+        `)
+        .order("name");
+
+    if (error) {
+        console.error("Category loading error:", error);
+        return;
+    }
+
+    categoryData = {};
+
+    data.forEach(category => {
+
+        categoryData[category.name] =
+            (category.subcategories || [])
+                .map(item => item.name);
+
+    });
+
+    renderCategories();
+}
+
+(async () => {
+
+    await loadCategories();
+
+    await loadAffiliateLinks();
+
+    await loadSponsoredCampaigns();
+
+    await loadAdNetworks();
+
+    await loadResources();
+
+})();
+/* =========================================================
+   ANALYTICS — VISITOR TRACKING
+========================================================= */
+
+async function trackAnalytics() {
+
+    try {
+
+        let visitorId =
+            localStorage.getItem(
+                "softwez_visitor_id"
+            );
+
+        if (!visitorId) {
+
+            visitorId =
+                crypto.randomUUID();
+
+            localStorage.setItem(
+                "softwez_visitor_id",
+                visitorId
+            );
+        }
+
+
+        const today =
+            new Date()
+                .toISOString()
+                .split("T")[0];
+
+
+        const lastUniqueVisit =
+            localStorage.getItem(
+                "softwez_last_unique_visit"
+            );
+
+
+        let country = "Unknown";
+
+
+        try {
+
+            const response =
+                await fetch(
+                    "https://ipapi.co/json/"
+                );
+
+            if (response.ok) {
+
+                const data =
+                    await response.json();
+
+                country =
+                    data.country_name ||
+                    "Unknown";
+            }
+
+        } catch (error) {
+
+            console.warn(
+                "Country detection failed:",
+                error
+            );
+        }
+
+
+        /* TOTAL VISITS */
+
+        const { error: pageViewError } =
+            await supabaseClient
+                .from("analytics_events")
+                .insert([
+                    {
+                        visitor_id: visitorId,
+                        event_type: "page_view",
+                        country: country
+                    }
+                ]);
+
+
+        if (pageViewError) {
+            throw pageViewError;
+        }
+
+
+        /* UNIQUE VISITOR */
+
+        if (lastUniqueVisit !== today) {
+
+            const { error: visitError } =
+                await supabaseClient
+                    .from("analytics_events")
+                    .insert([
+                        {
+                            visitor_id: visitorId,
+                            event_type: "visit",
+                            country: country
+                        }
+                    ]);
+
+
+            if (visitError) {
+                throw visitError;
+            }
+
+
+            localStorage.setItem(
+                "softwez_last_unique_visit",
+                today
+            );
+        }
+
+
+    } catch (error) {
+
+        console.error(
+            "Analytics tracking error:",
+            error
+        );
+
+    }
+
+}
+
+
+/* Start analytics */
+
+trackAnalytics();
+/* =========================================================
+   ANALYTICS — TOOL CLICK
+========================================================= */
+
+async function trackToolClick(toolId) {
+
+    try {
+
+        const visitorId =
+            localStorage.getItem(
+                "softwez_visitor_id"
+            );
+
+        if (!visitorId || !toolId) {
+            return;
+        }
+
+        const { error } =
+            await supabaseClient
+                .from("analytics_events")
+                .insert([
+                    {
+                        visitor_id: visitorId,
+                        event_type: "tool_click",
+                        tool_id: toolId
+                    }
+                ]);
+
+        if (error) {
+            console.error(
+                "Tool click tracking error:",
+                error
+            );
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Tool click analytics error:",
+            error
+        );
+
+    }
+
+}
