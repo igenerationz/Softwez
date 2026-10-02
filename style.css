@@ -1595,7 +1595,7 @@ footer {
 
     .url-check-row input {
         width: 100%;
-        height: 58px;
+        height: 100px;
 
         padding: 0 19px;
 
@@ -1618,27 +1618,27 @@ footer {
             transform 0.12s ease;
     }
 
-    .url-check-row input::placeholder {
-        color: #9aa0a6;
+ .url-check-row input::placeholder {
+    color: #9aa0a6;
 
-        font-size: 15px;
-    }
+    font-size: 15px;
+}
 
-    .url-check-row input:hover {
-        border-color: #c8ccd1;
+.url-check-row input:hover {
+    border-color: #c8ccd1;
 
-        box-shadow:
-            0 3px 10px rgba(0, 0, 0, 0.075);
-    }
+    box-shadow:
+        0 3px 10px rgba(0, 0, 0, 0.075);
+}
 
-    .url-check-row input:focus {
-        border-color: #b8bec6;
+.url-check-row input:focus {
+    border-color: #b8bec6;
 
-        box-shadow:
-            0 4px 14px rgba(0, 0, 0, 0.09);
+    box-shadow:
+        0 4px 14px rgba(0, 0, 0, 0.09);
 
-        transform: translateY(-1px);
-    }
+    transform: translateY(-1px);
+}
 
     #checkUrlButton {
         width: 100%;
