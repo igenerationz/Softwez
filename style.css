@@ -3,7 +3,7 @@
 ========================================================= */
 
 :root {
-    --bg: #f6f6f3;
+    --bg: #ffffff;
     --white: #ffffff;
     --text: #171717;
     --muted: #777;
@@ -64,7 +64,7 @@ header {
     position: sticky;
     top: 0;
 
-    background: rgba(246, 246, 243, 0.96);
+    background: rgba(255, 255, 255, 0.96);
 
     backdrop-filter: blur(8px);
 
