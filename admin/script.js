@@ -42,14 +42,35 @@ const ADMIN_EMAIL = "igenerationofficial@gmail.com";
 
 })();
 const savedAdminSection = localStorage.getItem("softwez_admin_section") || "dashboard";
-let tools = JSON.parse(localStorage.getItem("softwez_tools") || "[]");
+let tools = [];
 let categories = [];
 let subcategories = [];
-let affiliateLinks = JSON.parse(localStorage.getItem("softwez_affiliate") || "{}");
-let sponsoredTools = JSON.parse(localStorage.getItem("softwez_sponsored") || "[]");
-let adNetworks = JSON.parse(localStorage.getItem("softwez_ad_networks") || "[]");
+
+let affiliateLinks =
+    JSON.parse(
+        localStorage.getItem("softwez_affiliate") || "{}"
+    );
+
+let affiliateToolData = {};
+
+let sponsoredTools =
+    JSON.parse(
+        localStorage.getItem("softwez_sponsored") || "[]"
+    );
+
+let sponsoredTotal = 0;
+
+let adNetworks = [];
+
 let pendingSubmissions = [];
+
 let activeSearchQuery = "";
+
+let toolsPage = 0;
+
+let toolsTotal = 0;
+
+const TOOLS_PER_PAGE = 50;
 const navItems =
     document.querySelectorAll(".nav-item");
 const sections =
@@ -111,10 +132,6 @@ const pendingNavCount =
 const pendingSubmissionCount =
     document.getElementById("pendingSubmissionCount");
 function saveData() {
-    localStorage.setItem(
-        "softwez_tools",
-        JSON.stringify(tools)
-    );
 localStorage.setItem(
         "softwez_affiliate",
         JSON.stringify(affiliateLinks)
@@ -344,129 +361,110 @@ if (toolCategory) {
 }
 let toolUrlApproved = false;
 
-function checkAdminToolUrl() {
+async function checkAdminToolUrl() {
+    const linkInput = document.getElementById("toolLink");
 
-    const linkInput =
-        document.getElementById(
-            "toolLink"
-        );
-
-    const url =
-        linkInput?.value.trim() || "";
+    const url = linkInput?.value.trim() || "";
 
     if (!url) {
-
-        toolUrlCheckMessage.textContent =
-            "Please enter a website URL.";
-
-        toolUrlCheckMessage.className =
-            "url-check-message error";
-
-        toolUrlApproved = false;
-
-        return;
-    }
-
-    checkToolUrlButton.disabled = true;
-
-    checkToolUrlButton.textContent =
-        "Checking...";
-
-    toolUrlApproved = false;
-
-    const duplicateTool =
-        tools.find(
-            tool =>
-                String(
-                    tool.link || ""
-                ).trim() === url
-        );
-
-    setTimeout(() => {
-
-        if (duplicateTool) {
-
+        if (toolUrlCheckMessage) {
             toolUrlCheckMessage.textContent =
-                "✕ This exact URL already exists.";
+                "Please enter a website URL.";
 
             toolUrlCheckMessage.className =
                 "url-check-message error";
+        }
+
+        toolUrlApproved = false;
+        return;
+    }
+
+    if (checkToolUrlButton) {
+        checkToolUrlButton.disabled = true;
+        checkToolUrlButton.textContent = "Checking...";
+    }
+
+    toolUrlApproved = false;
+
+    try {
+        const {
+            data: duplicateTool,
+            error
+        } = await supabaseClient
+            .from("tools")
+            .select("id")
+            .eq("link", url)
+            .limit(1)
+            .maybeSingle();
+
+        if (error) {
+            throw error;
+        }
+
+        if (duplicateTool) {
+            if (toolUrlCheckMessage) {
+                toolUrlCheckMessage.textContent =
+                    "✕ This exact URL already exists.";
+
+                toolUrlCheckMessage.className =
+                    "url-check-message error";
+            }
 
             toolUrlApproved = false;
 
-            checkToolUrlButton.disabled =
-                false;
-
-            checkToolUrlButton.textContent =
-                "Check URL";
+            if (checkToolUrlButton) {
+                checkToolUrlButton.disabled = false;
+                checkToolUrlButton.textContent = "Check URL";
+            }
 
             return;
         }
 
-        toolUrlCheckMessage.textContent =
-            "✓ URL is available.";
+        if (toolUrlCheckMessage) {
+            toolUrlCheckMessage.textContent =
+                "✓ URL is available.";
 
-        toolUrlCheckMessage.className =
-            "url-check-message success";
+            toolUrlCheckMessage.className =
+                "url-check-message success";
+        }
 
         toolUrlApproved = true;
 
-        checkToolUrlButton.disabled =
-            false;
+        if (checkToolUrlButton) {
+            checkToolUrlButton.disabled = false;
+            checkToolUrlButton.textContent = "Checked";
+        }
 
-        checkToolUrlButton.textContent =
-            "Checked";
+    } catch (error) {
+        console.error(
+            "Tool URL check error:",
+            error
+        );
 
-    }, 300);
+        if (toolUrlCheckMessage) {
+            toolUrlCheckMessage.textContent =
+                "Could not check this URL.";
 
+            toolUrlCheckMessage.className =
+                "url-check-message error";
+        }
+
+        toolUrlApproved = false;
+
+        if (checkToolUrlButton) {
+            checkToolUrlButton.disabled = false;
+            checkToolUrlButton.textContent = "Check URL";
+        }
+    }
 }
 
 if (checkToolUrlButton) {
-
     checkToolUrlButton.addEventListener(
         "click",
         checkAdminToolUrl
     );
-
 }
 
-const adminToolLinkInput =
-    document.getElementById(
-        "toolLink"
-    );
-
-if (adminToolLinkInput) {
-
-    adminToolLinkInput.addEventListener(
-        "input",
-        () => {
-
-            toolUrlApproved = false;
-
-            if (toolUrlCheckMessage) {
-
-                toolUrlCheckMessage.textContent =
-                    "";
-
-                toolUrlCheckMessage.className =
-                    "url-check-message";
-
-            }
-
-            if (checkToolUrlButton) {
-
-                checkToolUrlButton.disabled =
-                    false;
-
-                checkToolUrlButton.textContent =
-                    "Check URL";
-
-            }
-
-        }
-    );
-
-}
 if (toolForm) {
     toolForm.addEventListener(
         "submit",
@@ -591,62 +589,86 @@ const editingId =
     toolForm.dataset.editingId;
 
 if (editingId) {
-        const {
-            data,
-            error
-        } =
-            await supabaseClient
-                .from("tools")
-                                .update({
-                    name,
-                    description,
-                    link,
-                    category,
-                    subcategory
-                })
-                .eq("id", editingId)
-                .select()
-                .single();
 
-if (error) {
-    throw error;
-}
+    const {
+        data: duplicateTool,
+        error: duplicateError
+    } = await supabaseClient
+        .from("tools")
+        .select("id")
+        .eq("link", link)
+        .neq("id", editingId)
+        .limit(1)
+        .maybeSingle();
 
-if (data) {
-    tools = tools.map(
-        tool =>
-            String(tool.id) === String(editingId)
-                ? data
-                : tool
+    if (duplicateError) {
+        throw duplicateError;
+    }
+
+    if (duplicateTool) {
+        alert(
+            "This exact URL already belongs to another tool."
+        );
+        return;
+    }
+
+    const {
+        error
+    } = await supabaseClient
+        .from("tools")
+        .update({
+            name,
+            description,
+            link,
+            category,
+            subcategory
+        })
+        .eq("id", editingId);
+
+    if (error) {
+        throw error;
+    }
+
+    delete toolForm.dataset.editingId;
+
+    const submitButton =
+        toolForm.querySelector(
+            'button[type="submit"]'
+        );
+
+    if (submitButton) {
+        submitButton.textContent = "Add Tool";
+    }
+
+    hideToolForm();
+
+    await loadToolsFromSupabase();
+
+    alert(
+        "Tool updated successfully."
     );
+
+    return;
 }
 
-delete toolForm.dataset.editingId;
 
-const submitButton =
-    toolForm.querySelector(
-        'button[type="submit"]'
-    );
+// =========================================
+// ADD NEW TOOL — DUPLICATE URL CHECK
+// =========================================
 
-if (submitButton) {
-    submitButton.textContent =
-        "Add Tool";
+const {
+    data: duplicateTool,
+    error: duplicateError
+} = await supabaseClient
+    .from("tools")
+    .select("id")
+    .eq("link", link)
+    .limit(1)
+    .maybeSingle();
+
+if (duplicateError) {
+    throw duplicateError;
 }
-
-saveData();
-renderAll();
-hideToolForm();
-
-alert(
-    "Tool updated successfully."
-);
-
-return;
-}
-const duplicateTool = tools.find(
-    tool =>
-        String(tool.link || "").trim() === link
-);
 
 if (duplicateTool) {
     alert(
@@ -655,35 +677,37 @@ if (duplicateTool) {
     return;
 }
 
+
+// =========================================
+// INSERT NEW TOOL
+// =========================================
+
 const {
     data,
     error
-} =
-    await supabaseClient
-        .from("tools")
-        .insert([
-            {
-                name,
-                description,
-                link,
-                category,
-                subcategory,
-                is_sponsored: false
-            }
-        ])
-        .select()
-        .single();
+} = await supabaseClient
+    .from("tools")
+    .insert([
+        {
+            name,
+            description,
+            link,
+            category,
+            subcategory,
+            is_sponsored: false
+        }
+    ])
+    .select()
+    .single();
 
 if (error) {
     throw error;
 }
 
-if (data) {
-    tools.unshift(data);
-}
+toolsPage = 0;
 
-saveData();
-renderAll();
+await loadToolsFromSupabase();
+
 hideToolForm();
 
 alert(
@@ -691,6 +715,7 @@ alert(
 );
 
 } catch (error) {
+
     console.error(
         "Add tool error:",
         error
@@ -708,96 +733,56 @@ alert(
     );
 }
 
-function renderTools(
-    searchTerm = ""
-) {
+function renderTools() {
     if (!toolsTableBody) {
         return;
     }
 
     toolsTableBody.innerHTML = "";
 
-    const search =
-        String(searchTerm || "")
-            .toLowerCase()
-            .trim();
-
-    const words =
-        search
-            ? search.split(/\s+/)
-            : [];
-
-    const filteredTools =
-        tools.filter(tool => {
-            if (!search) {
-                return true;
-            }
-
-            const text = [
-                tool.name,
-                tool.description,
-                tool.category,
-                tool.link
-            ]
-                .filter(Boolean)
-                .join(" ")
-                .toLowerCase();
-
-            return words.every(
-                word =>
-                    text.includes(word)
-            );
-        });
-
-    if (!filteredTools.length) {
+    if (!tools.length) {
         toolsTableBody.innerHTML = `
             <tr>
                 <td colspan="4">
                     <div class="empty-state">
-                        No tools found.
+                        ${
+                            activeSearchQuery
+                                ? "No tools found."
+                                : "No tools available."
+                        }
                     </div>
                 </td>
             </tr>
         `;
 
+        renderToolsPagination();
         return;
     }
 
-    filteredTools.forEach(tool => {
-        const row =
-            document.createElement(
-                "tr"
-            );
+    tools.forEach(tool => {
+        const row = document.createElement("tr");
 
         row.innerHTML = `
             <td>
                 <div class="tool-name">
-                    ${escapeHTML(
-                        tool.name
-                    )}
+                    ${escapeHTML(tool.name)}
                 </div>
 
                 <div class="tool-description">
-                    ${escapeHTML(
-                        tool.description
-                    )}
+                    ${escapeHTML(tool.description)}
                 </div>
             </td>
 
             <td>
                 <span class="category-badge">
-                    ${escapeHTML(
-                        tool.category || ""
-                    )}
+                    ${escapeHTML(tool.category || "")}
                 </span>
             </td>
 
             <td>
                 <a
                     class="table-link"
-                    href="${escapeAttribute(
-                        tool.link || ""
-                    )}"
+                    href="${escapeAttribute(tool.link || "")}"
                     target="_blank"
                     rel="noopener noreferrer"
                 >
@@ -805,39 +790,82 @@ function renderTools(
                 </a>
             </td>
 
-           <td>
-    <div class="table-actions">
+            <td>
+                <div class="table-actions">
 
-        <button
-            type="button"
-            class="action-button"
-            onclick="editTool('${escapeAttribute(tool.id)}')"
-        >
-            Edit
-        </button>
+                    <button
+                        type="button"
+                        class="action-button"
+                        onclick="editTool('${escapeAttribute(tool.id)}')"
+                    >
+                        Edit
+                    </button>
 
-        <button
-            type="button"
-            class="action-button delete"
-            onclick="deleteTool('${escapeAttribute(tool.id)}')"
-        >
-            Delete
-        </button>
+                    <button
+                        type="button"
+                        class="action-button delete"
+                        onclick="deleteTool('${escapeAttribute(tool.id)}')"
+                    >
+                        Delete
+                    </button>
 
-    </div>
-</td>
+                </div>
+            </td>
         `;
 
-        toolsTableBody.appendChild(
-            row
-        );
+        toolsTableBody.appendChild(row);
     });
+
+    renderToolsPagination();
 }
 
+function renderToolsPagination() {
+    const toolsPagination =
+        document.getElementById("toolsPagination");
+
+    if (!toolsPagination) {
+        return;
+    }
+
+    const totalPages = Math.max(
+        1,
+        Math.ceil(
+            toolsTotal / TOOLS_PER_PAGE
+        )
+    );
+
+    const hasPreviousPage =
+        toolsPage > 0;
+
+    const hasNextPage =
+        toolsPage < totalPages - 1;
+
+    toolsPagination.innerHTML = `
+        <button
+            type="button"
+            ${!hasPreviousPage ? "disabled" : ""}
+            onclick="changeToolsPage(-1)"
+        >
+            Previous
+        </button>
+
+        <span>
+            Page ${toolsPage + 1} of ${totalPages}
+        </span>
+
+        <button
+            type="button"
+            ${!hasNextPage ? "disabled" : ""}
+            onclick="changeToolsPage(1)"
+        >
+            Next
+        </button>
+    `;
+}
 if (toolSearch) {
     toolSearch.addEventListener(
         "keydown",
-        event => {
+        async event => {
             if (
                 event.key !==
                 "Enter"
@@ -850,125 +878,191 @@ if (toolSearch) {
             activeSearchQuery =
                 toolSearch.value.trim();
 
-            renderTools(
-                activeSearchQuery
-            );
+            toolsPage = 0;
+
+            await loadToolsFromSupabase();
         }
     );
 }
+async function changeToolsPage(direction) {
+    const nextPage = toolsPage + direction;
 
-function editTool(id) {
-    const tool = tools.find(
-        item =>
-            String(item.id) ===
-            String(id)
+    const totalPages = Math.max(
+        1,
+        Math.ceil(toolsTotal / TOOLS_PER_PAGE)
     );
 
-    if (!tool) {
+    if (nextPage < 0 || nextPage >= totalPages) {
         return;
     }
 
-    const nameInput =
-        document.getElementById(
-            "toolName"
-        );
+    toolsPage = nextPage;
 
-    const descriptionInput =
-        document.getElementById(
-            "toolDescription"
-        );
-
-    const linkInput =
-        document.getElementById(
-            "toolLink"
-        );
-
-    const categoryInput =
-        document.getElementById(
-            "toolCategory"
-        );
-
-    if (
-        !nameInput ||
-        !descriptionInput ||
-        !linkInput ||
-        !categoryInput
-    ) {
-        return;
-    }
-
-    nameInput.value =
-        tool.name || "";
-
-    descriptionInput.value =
-        tool.description || "";
-
-    linkInput.value =
-        tool.link || "";
-
-    categoryInput.value =
-        tool.category || "";
-
-    renderToolSubcategorySelect();
-
-    toolSubcategory.value =
-        tool.subcategory || "";
-
-    toolForm.dataset.editingId =
-        tool.id;
-
-    const submitButton =
-        toolForm.querySelector(
-            'button[type="submit"]'
-        );
-
-    if (submitButton) {
-        submitButton.textContent =
-            "Save Changes";
-    }
-
-    showToolForm();
+    await loadToolsFromSupabase();
 }
-
-async function deleteTool(id) {
-    const tool =
-        tools.find(
-            item =>
-                String(item.id) ===
-                String(id)
-        );
-
-    if (!tool) {
-        return;
-    }
-
-    if (
-        !confirm(
-            `Delete "${tool.name}"?`
-        )
-    ) {
-        return;
-    }
-
+async function editTool(id) {
     try {
         const {
+            data: tool,
             error
-        } =
-            await supabaseClient
-                .from("tools")
-                .delete()
-                .eq("id", id);
+        } = await supabaseClient
+            .from("tools")
+            .select(`
+    id,
+    name,
+    description,
+    link,
+    category,
+    subcategory
+`)
+            .eq("id", id)
+            .single();
 
         if (error) {
             throw error;
         }
 
-        tools =
-            tools.filter(
-                item =>
-                    String(item.id) !==
-                    String(id)
+        if (!tool) {
+            alert("Tool not found.");
+            return;
+        }
+
+        const nameInput =
+            document.getElementById("toolName");
+
+        const descriptionInput =
+            document.getElementById(
+                "toolDescription"
             );
+
+        const linkInput =
+            document.getElementById("toolLink");
+
+        const categoryInput =
+            document.getElementById(
+                "toolCategory"
+            );
+
+        if (
+            !nameInput ||
+            !descriptionInput ||
+            !linkInput ||
+            !categoryInput
+        ) {
+            return;
+        }
+
+        nameInput.value =
+            tool.name || "";
+
+        descriptionInput.value =
+            tool.description || "";
+
+        linkInput.value =
+            tool.link || "";
+
+        categoryInput.value =
+            tool.category || "";
+
+        renderToolSubcategorySelect();
+
+        toolSubcategory.value =
+            tool.subcategory || "";
+
+        toolForm.dataset.editingId =
+            tool.id;
+
+        const submitButton =
+            toolForm.querySelector(
+                'button[type="submit"]'
+            );
+
+        if (submitButton) {
+            submitButton.textContent =
+                "Save Changes";
+        }
+
+        showToolForm();
+
+    } catch (error) {
+        console.error(
+            "Edit tool loading error:",
+            error
+        );
+
+        alert(
+            "Failed to load tool.\n\n" +
+            (
+                error?.message ||
+                "Unknown error"
+            )
+        );
+    }
+}
+
+async function deleteTool(id) {
+
+    try {
+
+        const {
+            data: tool,
+            error: loadError
+        } = await supabaseClient
+            .from("tools")
+            .select(
+                "id,name"
+            )
+            .eq(
+                "id",
+                id
+            )
+            .single();
+
+
+        if (loadError) {
+            throw loadError;
+        }
+
+
+        if (!tool) {
+
+            alert(
+                "Tool not found."
+            );
+
+            return;
+        }
+
+
+        if (
+            !confirm(
+                `Delete "${tool.name}"?`
+            )
+        ) {
+            return;
+        }
+
+
+        const {
+            error
+        } = await supabaseClient
+            .from("tools")
+            .delete()
+            .eq(
+                "id",
+                id
+            );
+
+
+        if (error) {
+            throw error;
+        }
+
+
+        delete affiliateLinks[id];
+
+        delete affiliateToolData[id];
+
 
         sponsoredTools =
             sponsoredTools.filter(
@@ -977,20 +1071,34 @@ async function deleteTool(id) {
                     String(id)
             );
 
-        delete affiliateLinks[id];
 
         saveData();
-        renderAll();
+
+
+        // RELOAD CURRENT TOOLS PAGE
+        await loadToolsFromSupabase();
+
+
+        // RELOAD GLOBAL STATS
+        await loadToolStats();
+
+
+        // RELOAD AFFILIATE DATA
+        await loadAffiliateLinks();
+
 
         alert(
             "Tool deleted successfully."
         );
 
+
     } catch (error) {
+
         console.error(
             "Delete tool error:",
             error
         );
+
 
         alert(
             "Failed to delete tool.\n\n" +
@@ -999,7 +1107,9 @@ async function deleteTool(id) {
                 "Unknown error"
             )
         );
+
     }
+
 }
 
 const sponsoredCampaignForm =
@@ -1071,22 +1181,16 @@ let sponsoredCampaigns = [];
 let editingSponsoredCampaignId = null;
 
 async function loadSponsoredCampaigns() {
+
     try {
+
+        // LOAD CAMPAIGNS
         const {
-            data,
-            error
+            data: campaigns,
+            error: campaignsError
         } = await supabaseClient
             .from("sponsored_campaigns")
-            .select(`
-                *,
-                tools (
-                    id,
-                    name,
-                    description,
-                    link,
-                    category
-                )
-            `)
+            .select("*")
             .order(
                 "created_at",
                 {
@@ -1094,29 +1198,117 @@ async function loadSponsoredCampaigns() {
                 }
             );
 
-        if (error) {
-            throw error;
+        if (campaignsError) {
+            throw campaignsError;
         }
 
+
+        const campaignList =
+            campaigns || [];
+
+
+        // GET ALL TOOL IDS
+        const toolIds =
+            [
+                ...new Set(
+                    campaignList
+                        .map(
+                            campaign =>
+                                campaign.tool_id
+                        )
+                        .filter(Boolean)
+                )
+            ];
+
+
+        // LOAD TOOLS SEPARATELY
+        let toolsMap = {};
+
+
+        if (toolIds.length > 0) {
+
+            const {
+                data: toolData,
+                error: toolsError
+            } = await supabaseClient
+                .from("tools")
+                .select(
+                    `
+                    id,
+                    name,
+                    description,
+                    link,
+                    category
+                    `
+                )
+                .in(
+                    "id",
+                    toolIds
+                );
+
+
+            if (toolsError) {
+                throw toolsError;
+            }
+
+
+            (toolData || []).forEach(
+                tool => {
+
+                    toolsMap[
+                        String(tool.id)
+                    ] = tool;
+
+                }
+            );
+        }
+
+
+        // ATTACH TOOL DATA TO EACH CAMPAIGN
         sponsoredCampaigns =
-            data || [];
+            campaignList.map(
+                campaign => ({
+
+                    ...campaign,
+
+                    tools:
+                        toolsMap[
+                            String(
+                                campaign.tool_id
+                            )
+                        ] || null
+
+                })
+            );
+
 
         renderSponsoredCampaigns();
+
         renderSponsoredAnalytics();
+
 
     } catch (error) {
-        console.error(
-            "Sponsored campaigns loading error:",
-            error
-        );
 
-        sponsoredCampaigns = [];
+    console.error(
+        "Sponsored campaigns loading error:",
+        error
+    );
 
-        renderSponsoredCampaigns();
-        renderSponsoredAnalytics();
-    }
+    alert(
+        "Sponsored campaigns loading error:\n\n" +
+        (
+            error?.message ||
+            JSON.stringify(error)
+        )
+    );
+
+    sponsoredCampaigns = [];
+
+    renderSponsoredCampaigns();
+
+    renderSponsoredAnalytics();
 }
-
+}
 function renderSponsoredToolSelect() {
 
     const searchInput =
@@ -1143,7 +1335,7 @@ function renderSponsoredToolSelect() {
         return;
     }
 
-    searchInput.oninput = () => {
+    searchInput.oninput = async () => {
 
         const search =
             searchInput.value
@@ -1156,30 +1348,39 @@ function renderSponsoredToolSelect() {
             return;
         }
 
-        const words =
-            search.split(/\s+/);
+        const {
+    data: matchedTools,
+    error
+} = await supabaseClient
+    .from("tools")
+    .select(
+        "id,name,description,category,subcategory,link"
+    )
+    .or(
+        `name.ilike.%${search}%,description.ilike.%${search}%,category.ilike.%${search}%,subcategory.ilike.%${search}%,link.ilike.%${search}%`
+    )
+    .order(
+        "created_at",
+        {
+            ascending: false
+        }
+    )
+    .limit(20);
 
-        const matchedTools =
-            tools
-                .filter(tool => {
+if (error) {
+    console.error(
+        "Sponsored tool search error:",
+        error
+    );
 
-                    const text = [
-                        tool.name,
-                        tool.description,
-                        tool.category,
-                        tool.subcategory,
-                        tool.link
-                    ]
-                        .filter(Boolean)
-                        .join(" ")
-                        .toLowerCase();
+    resultsContainer.innerHTML = `
+        <div class="sponsored-tool-no-results">
+            Search failed.
+        </div>
+    `;
 
-                    return words.every(
-                        word =>
-                            text.includes(word)
-                    );
-                })
-                .slice(0, 20);
+    return;
+}
 
         if (!matchedTools.length) {
 
@@ -1372,59 +1573,157 @@ if (sponsoredCampaignForm) {
                     editingSponsoredCampaignId
                 ) {
 
-                    const result =
-                        await supabaseClient
-                            .from(
-                                "sponsored_campaigns"
-                            )
-                            .update(payload)
-                            .eq(
-                                "id",
-                                editingSponsoredCampaignId
-                            )
-                            .select(`
-                                *,
-                                tools (
-                                    id,
-                                    name,
-                                    description,
-                                    link,
-                                    category
-                                )
-                            `)
-                            .single();
+                    const {
+    data: updatedCampaign,
+    error: updateError
+} = await supabaseClient.rpc(
+    "update_sponsored_campaign",
+    {
+        p_campaign_id:
+            editingSponsoredCampaignId,
 
-                    data = result.data;
-                    error = result.error;
+        p_tool_id:
+            toolId,
+
+        p_campaign_type:
+            type,
+
+        p_start_at:
+            (
+                type === "time" ||
+                type === "time_click"
+            )
+                ? new Date(
+                    startValue
+                ).toISOString()
+                : null,
+
+        p_end_at:
+            (
+                type === "time" ||
+                type === "time_click"
+            )
+                ? new Date(
+                    endValue
+                ).toISOString()
+                : null,
+
+        p_click_limit:
+            (
+                type === "click" ||
+                type === "time_click"
+            )
+                ? Number(clickValue)
+                : null
+    }
+);
+
+if (updateError) {
+    throw updateError;
+}
+
+const {
+    data: updatedTool,
+    error: updatedToolError
+} = await supabaseClient
+    .from("tools")
+    .select(`
+        id,
+        name,
+        description,
+        link,
+        category
+    `)
+    .eq(
+        "id",
+        updatedCampaign.tool_id
+    )
+    .single();
+
+if (updatedToolError) {
+    throw updatedToolError;
+}
+
+data = {
+    ...updatedCampaign,
+    tools: updatedTool
+};
+
+error = null;
 
                 } else {
 
-                    const result =
-                        await supabaseClient
-                            .from(
-                                "sponsored_campaigns"
-                            )
-                            .insert([
-                                {
-                                    ...payload,
-                                    is_active: true
-                                }
-                            ])
-                            .select(`
-                                *,
-                                tools (
-                                    id,
-                                    name,
-                                    description,
-                                    link,
-                                    category
-                                )
-                            `)
-                            .single();
+    const {
+        data: createdCampaign,
+        error: rpcError
+    } = await supabaseClient.rpc(
+        "create_sponsored_campaign",
+        {
+            p_tool_id: toolId,
+            p_campaign_type: type,
+            p_start_at:
+                (
+                    type === "time" ||
+                    type === "time_click"
+                )
+                    ? new Date(
+                        startValue
+                    ).toISOString()
+                    : null,
 
-                    data = result.data;
-                    error = result.error;
-                }
+            p_end_at:
+                (
+                    type === "time" ||
+                    type === "time_click"
+                )
+                    ? new Date(
+                        endValue
+                    ).toISOString()
+                    : null,
+
+            p_click_limit:
+                (
+                    type === "click" ||
+                    type === "time_click"
+                )
+                    ? Number(clickValue)
+                    : null
+        }
+    );
+
+    if (rpcError) {
+        throw rpcError;
+    }
+
+const {
+    data: toolData,
+    error: toolError
+} = await supabaseClient
+    .from("tools")
+    .select(`
+        id,
+        name,
+        description,
+        link,
+        category
+    `)
+    .eq(
+        "id",
+        createdCampaign.tool_id
+    )
+    .single();
+
+if (toolError) {
+    throw toolError;
+}
+
+data = {
+    ...createdCampaign,
+    tools: toolData
+};
+
+error = null;
+}
 
                 if (error) {
                     throw error;
@@ -1513,13 +1812,16 @@ async function toggleSponsoredCampaignPause(
         return;
     }
 
+
     const shouldPause =
         campaign.is_active === true;
+
 
     const actionText =
         shouldPause
             ? "pause"
             : "resume";
+
 
     if (
         !confirm(
@@ -1529,55 +1831,77 @@ async function toggleSponsoredCampaignPause(
         return;
     }
 
+
     try {
 
         const {
-            data,
-            error
-        } =
-            await supabaseClient
-                .from(
-                    "sponsored_campaigns"
-                )
-                .update({
-                    is_active:
-                        !shouldPause,
+            data: updatedCampaign,
+            error: toggleError
+        } = await supabaseClient.rpc(
+            "toggle_sponsored_campaign",
+            {
+                p_campaign_id:
+                    campaignId,
 
-                    updated_at:
-                        new Date()
-                            .toISOString()
-                })
-                .eq(
-                    "id",
-                    campaignId
-                )
-                .select(`
-                    *,
-                    tools (
-                        id,
-                        name,
-                        description,
-                        link,
-                        category
-                    )
-                `)
-                .single();
+                p_is_active:
+                    !shouldPause
+            }
+        );
 
-        if (error) {
-            throw error;
+
+        if (toggleError) {
+            throw toggleError;
         }
+
+
+        const toolId =
+            updatedCampaign.tool_id;
+
+
+        const {
+            data: toolData,
+            error: toolError
+        } = await supabaseClient
+            .from("tools")
+            .select(`
+                id,
+                name,
+                description,
+                link,
+                category
+            `)
+            .eq(
+                "id",
+                toolId
+            )
+            .single();
+
+
+        if (toolError) {
+            throw toolError;
+        }
+
+
+        const completeCampaign = {
+            ...updatedCampaign,
+            tools: toolData
+        };
+
 
         sponsoredCampaigns =
             sponsoredCampaigns.map(
                 item =>
                     String(item.id) ===
                     String(campaignId)
-                        ? data
+                        ? completeCampaign
                         : item
             );
 
+
         renderSponsoredCampaigns();
+
         renderSponsoredAnalytics();
+
 
     } catch (error) {
 
@@ -1586,6 +1910,7 @@ async function toggleSponsoredCampaignPause(
             error
         );
 
+
         alert(
             "Failed to update campaign status.\n\n" +
             (
@@ -1593,6 +1918,7 @@ async function toggleSponsoredCampaignPause(
                 "Unknown error"
             )
         );
+
     }
 }
 function editSponsoredCampaign(campaignId) {
@@ -1735,6 +2061,7 @@ function isCampaignCurrentlyActive(
 
     return true;
 }
+
 async function deleteSponsoredCampaign(
     campaignId
 ) {
@@ -1750,8 +2077,10 @@ async function deleteSponsoredCampaign(
         return;
     }
 
+
     const tool =
         campaign.tools || {};
+
 
     if (
         !confirm(
@@ -1762,24 +2091,25 @@ async function deleteSponsoredCampaign(
         return;
     }
 
+
     try {
 
         const {
-            error
-        } =
-            await supabaseClient
-                .from(
-                    "sponsored_campaigns"
-                )
-                .delete()
-                .eq(
-                    "id",
+            data: deleted,
+            error: deleteError
+        } = await supabaseClient.rpc(
+            "delete_sponsored_campaign",
+            {
+                p_campaign_id:
                     campaignId
-                );
+            }
+        );
 
-        if (error) {
-            throw error;
+
+        if (deleteError) {
+            throw deleteError;
         }
+
 
         sponsoredCampaigns =
             sponsoredCampaigns.filter(
@@ -1788,12 +2118,16 @@ async function deleteSponsoredCampaign(
                     String(campaignId)
             );
 
+
         renderSponsoredCampaigns();
+
         renderSponsoredAnalytics();
+
 
         alert(
             "Sponsored campaign deleted successfully."
         );
+
 
     } catch (error) {
 
@@ -1802,6 +2136,7 @@ async function deleteSponsoredCampaign(
             error
         );
 
+
         alert(
             "Failed to delete campaign.\n\n" +
             (
@@ -1809,11 +2144,13 @@ async function deleteSponsoredCampaign(
                 "Unknown error"
             )
         );
+
     }
 }
 async function deactivateSponsoredCampaign(
     campaignId
 ) {
+
     if (
         !confirm(
             "Deactivate this sponsored campaign?"
@@ -1823,46 +2160,47 @@ async function deactivateSponsoredCampaign(
     }
 
     try {
+
         const {
-            error
-        } = await supabaseClient
-            .from(
-                "sponsored_campaigns"
-            )
-            .update({
-                is_active:
-                    false,
+            data: pausedCampaign,
+            error: pauseError
+        } = await supabaseClient.rpc(
+            "pause_sponsored_campaign",
+            {
+                p_campaign_id:
+                    campaignId
+            }
+        );
 
-                updated_at:
-                    new Date()
-                        .toISOString()
-            })
-            .eq(
-                "id",
-                campaignId
-            );
-
-        if (error) {
-            throw error;
+        if (pauseError) {
+            throw pauseError;
         }
+
 
         sponsoredCampaigns =
             sponsoredCampaigns.map(
                 campaign =>
-                    campaign.id ===
-                    campaignId
+
+                    String(campaign.id) ===
+                    String(campaignId)
+
                         ? {
                             ...campaign,
                             is_active:
                                 false
                         }
+
                         : campaign
             );
 
+
         renderSponsoredCampaigns();
+
         renderSponsoredAnalytics();
 
+
     } catch (error) {
+
         console.error(
             "Deactivate campaign error:",
             error
@@ -1875,9 +2213,9 @@ async function deactivateSponsoredCampaign(
                 "Unknown error"
             )
         );
+
     }
 }
-
 function renderSponsoredAnalytics() {
     const active =
         sponsoredCampaigns.filter(
@@ -3707,6 +4045,7 @@ async function deleteSubcategory(id) {
 }
 
 async function deleteCategory(id) {
+
     const category =
         categories.find(
             row =>
@@ -3714,38 +4053,57 @@ async function deleteCategory(id) {
                 String(id)
         );
 
+
     if (!category) {
         return;
     }
 
-    const used =
-        tools.some(
-            tool =>
-                String(
-                    tool.category || ""
-                ).toLowerCase() ===
-                String(
-                    category.name
-                ).toLowerCase()
-        );
-
-    if (used) {
-        alert(
-            "This category is currently used by one or more tools. Remove or move those tools first."
-        );
-
-        return;
-    }
-
-    if (
-        !confirm(
-            `Delete category "${category.name}"?\n\nAll subcategories under this category will also be deleted.`
-        )
-    ) {
-        return;
-    }
 
     try {
+
+        // CHECK ALL TOOLS IN DATABASE
+        const {
+            count,
+            error: checkError
+        } = await supabaseClient
+            .from("tools")
+            .select(
+                "id",
+                {
+                    count: "exact",
+                    head: true
+                }
+            )
+            .ilike(
+                "category",
+                category.name
+            );
+
+
+        if (checkError) {
+            throw checkError;
+        }
+
+
+        if (count > 0) {
+
+            alert(
+                "This category is currently used by one or more tools. Remove or move those tools first."
+            );
+
+            return;
+        }
+
+
+        if (
+            !confirm(
+                `Delete category "${category.name}"?\n\nAll subcategories under this category will also be deleted.`
+            )
+        ) {
+            return;
+        }
+
+
         const {
             error
         } =
@@ -3757,9 +4115,11 @@ async function deleteCategory(id) {
                     id
                 );
 
+
         if (error) {
             throw error;
         }
+
 
         categories =
             categories.filter(
@@ -3767,6 +4127,7 @@ async function deleteCategory(id) {
                     String(row.id) !==
                     String(id)
             );
+
 
         subcategories =
             subcategories.filter(
@@ -3777,20 +4138,28 @@ async function deleteCategory(id) {
                     String(id)
             );
 
+
         renderCategorySelect();
+
         renderSubcategoryCategorySelect();
+
         renderCategories();
+
         renderStats();
+
 
         alert(
             "Category deleted successfully."
         );
 
+
     } catch (error) {
+
         console.error(
             "Delete category error:",
             error
         );
+
 
         alert(
             "Failed to delete category.\n\n" +
@@ -3799,10 +4168,16 @@ async function deleteCategory(id) {
                 "Unknown error"
             )
         );
+
     }
+
 }
+/* =========================================================
+   AFFILIATE MANAGEMENT
+========================================================= */
 
 function renderAffiliateToolSelect() {
+
     const searchInput =
         document.getElementById(
             "affiliateToolSearch"
@@ -3818,6 +4193,7 @@ function renderAffiliateToolSelect() {
             "affiliateToolSelected"
         );
 
+
     if (
         !searchInput ||
         !resultsContainer ||
@@ -3827,203 +4203,392 @@ function renderAffiliateToolSelect() {
         return;
     }
 
-    searchInput.oninput = () => {
+
+    searchInput.oninput = async () => {
+
         const search =
             searchInput.value
-                .toLowerCase()
+                .trim()
+                .replace(/[%,()]/g, " ")
+                .replace(/\*/g, " ")
+                .replace(/\s+/g, " ")
                 .trim();
 
-        resultsContainer.innerHTML = "";
 
         if (!search) {
-            return;
-        }
 
-        const words =
-            search.split(/\s+/);
-
-        const matchedTools =
-            tools
-                .filter(tool => {
-                    const text = [
-                        tool.name,
-                        tool.description,
-                        tool.category,
-                        tool.subcategory,
-                        tool.link
-                    ]
-                        .filter(Boolean)
-                        .join(" ")
-                        .toLowerCase();
-
-                    return words.every(
-                        word =>
-                            text.includes(word)
-                    );
-                })
-                .slice(0, 20);
-
-        if (!matchedTools.length) {
-            resultsContainer.innerHTML = `
-                <div class="affiliate-tool-no-results">
-                    No tools found.
-                </div>
-            `;
+            resultsContainer.innerHTML =
+                "";
 
             return;
         }
 
-        matchedTools.forEach(tool => {
-            const result =
-                document.createElement(
-                    "div"
-                );
 
-            result.className =
-                "affiliate-tool-result";
+        try {
 
-            result.innerHTML = `
-                <strong>
-                    ${escapeHTML(
-                        tool.name || ""
-                    )}
-                </strong>
+            const {
+                data: matchedTools,
+                error
+            } = await supabaseClient
+                .from("tools")
+                .select(
+                    `
+                    id,
+                    name,
+                    description,
+                    category,
+                    subcategory,
+                    link
+                    `
+                )
+                .or(
+                    `name.ilike.%${search}%,description.ilike.%${search}%,category.ilike.%${search}%,subcategory.ilike.%${search}%,link.ilike.%${search}%`
+                )
+                .order(
+                    "created_at",
+                    {
+                        ascending: false
+                    }
+                )
+                .limit(20);
 
-                <small>
-                    ${escapeHTML(
-                        tool.category || ""
-                    )}
-                </small>
-            `;
 
-            result.addEventListener(
-                "click",
-                () => {
-                    affiliateTool.value =
-                        tool.id;
+            if (error) {
+                throw error;
+            }
 
-                    selectedContainer.innerHTML = `
-                        Selected:
+
+            resultsContainer.innerHTML =
+                "";
+
+
+            if (
+                !matchedTools ||
+                matchedTools.length === 0
+            ) {
+
+                resultsContainer.innerHTML = `
+                    <div class="affiliate-tool-no-results">
+                        No tools found.
+                    </div>
+                `;
+
+                return;
+            }
+
+
+            matchedTools.forEach(
+                tool => {
+
+                    const result =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    result.className =
+                        "affiliate-tool-result";
+
+
+                    result.innerHTML = `
                         <strong>
                             ${escapeHTML(
                                 tool.name || ""
                             )}
                         </strong>
+
+                        <small>
+                            ${escapeHTML(
+                                tool.category || ""
+                            )}
+                        </small>
                     `;
 
-                    searchInput.value =
-                        tool.name || "";
 
-                    resultsContainer.innerHTML =
-                        "";
+                    result.addEventListener(
+                        "click",
+                        () => {
+
+                            affiliateTool.value =
+                                tool.id;
+
+
+                            selectedContainer.innerHTML = `
+                                Selected:
+                                <strong>
+                                    ${escapeHTML(
+                                        tool.name || ""
+                                    )}
+                                </strong>
+                            `;
+
+
+                            searchInput.value =
+                                tool.name || "";
+
+
+                            resultsContainer.innerHTML =
+                                "";
+
+                        }
+                    );
+
+
+                    resultsContainer.appendChild(
+                        result
+                    );
+
                 }
             );
 
-            resultsContainer.appendChild(
-                result
+        } catch (error) {
+
+            console.error(
+                "Affiliate tool search error:",
+                error
             );
-        });
+
+            resultsContainer.innerHTML = `
+                <div class="affiliate-tool-no-results">
+                    Search failed.
+                </div>
+            `;
+
+        }
+
     };
 
-    searchInput.value = "";
-    resultsContainer.innerHTML = "";
-    selectedContainer.innerHTML = "";
-    affiliateTool.value = "";
+
+    searchInput.value =
+        "";
+
+    resultsContainer.innerHTML =
+        "";
+
+    selectedContainer.innerHTML =
+        "";
+
+    affiliateTool.value =
+        "";
+
 }
+
+
+/* =========================================================
+   SAVE AFFILIATE
+========================================================= */
+
 if (affiliateForm) {
-    affiliateForm.addEventListener(
-        "submit",
-        async event => {
-            event.preventDefault();
 
-            if (!affiliateTool) {
-                return;
+    affiliateForm.onsubmit = async event => {
+
+        event.preventDefault();
+
+
+        const toolId =
+            affiliateTool
+                ? affiliateTool.value
+                : "";
+
+
+        const input =
+            document.getElementById(
+                "affiliateLink"
+            );
+
+
+        const link =
+            input
+                ? input.value.trim()
+                : "";
+
+
+        if (
+            !toolId ||
+            !link
+        ) {
+
+            alert(
+                "Please select a tool and enter an affiliate link."
+            );
+
+            return;
+        }
+
+
+        try {
+
+            const {
+                data: savedAffiliate,
+                error: affiliateError
+            } = await supabaseClient.rpc(
+                "save_affiliate_link",
+                {
+                    p_tool_id:
+                        toolId,
+
+                    p_affiliate_url:
+                        link
+                }
+            );
+
+
+            if (affiliateError) {
+                throw affiliateError;
             }
 
-            const toolId =
-                affiliateTool.value;
 
-            const input =
-                document.getElementById(
-                    "affiliateLink"
-                );
-
-            const link =
-                input
-                    ? input.value.trim()
-                    : "";
-
-            if (
-                !toolId ||
-                !link
-            ) {
-                alert(
-                    "Please select a tool and enter an affiliate link."
-                );
-
-                return;
-            }
+            /* UPDATE LOCAL STATE */
 
             affiliateLinks[toolId] =
-    link;
+                link;
 
-saveData();
 
-const {
-    data,
-    error
-} = await supabaseClient
-    .from("affiliate_links")
-    .upsert(
-        {
-            tool_id: toolId,
-            affiliate_url: link,
-            is_active: true
-        },
-        {
-            onConflict: "tool_id"
-        }
-    );
+            /*
+                Get tool information directly.
+                This works even when the tool
+                is outside the current 50-tool page.
+            */
 
-if (error) {
-    console.error(
-        "Affiliate save error:",
-        error
-    );
+            const {
+                data: toolData,
+                error: toolError
+            } = await supabaseClient
+                .from("tools")
+                .select(
+                    `
+                    id,
+                    name,
+                    description,
+                    category,
+                    subcategory,
+                    link
+                    `
+                )
+                .eq(
+                    "id",
+                    toolId
+                )
+                .single();
 
-    alert(
-        "Affiliate link could not be saved to database.\n\n" +
-        error.message
-    );
 
-    return;
-}
+            if (toolError) {
+                throw toolError;
+            }
 
-renderAll();
 
-            affiliateForm.reset();
+            affiliateToolData[toolId] =
+                toolData;
+
+
+            /* CLEAR OLD LOCAL STORAGE DATA */
+
+            localStorage.removeItem(
+                "softwez_affiliate"
+            );
+
+
+            /* RESET FORM */
+
+            if (affiliateForm) {
+                affiliateForm.reset();
+            }
+
+
+            if (affiliateTool) {
+                affiliateTool.value =
+                    "";
+            }
+
+
+            const searchInput =
+                document.getElementById(
+                    "affiliateToolSearch"
+                );
+
+            const resultsContainer =
+                document.getElementById(
+                    "affiliateToolResults"
+                );
+
+            const selectedContainer =
+                document.getElementById(
+                    "affiliateToolSelected"
+                );
+
+
+            if (searchInput) {
+                searchInput.value =
+                    "";
+            }
+
+            if (resultsContainer) {
+                resultsContainer.innerHTML =
+                    "";
+            }
+
+            if (selectedContainer) {
+                selectedContainer.innerHTML =
+                    "";
+            }
+
+
+            renderAffiliateList();
+
+            renderStats();
+
 
             alert(
                 "Affiliate link saved successfully."
             );
+
+
+        } catch (error) {
+
+            console.error(
+                "Affiliate save error:",
+                error
+            );
+
+
+            alert(
+                "Affiliate link could not be saved.\n\n" +
+                (
+                    error?.message ||
+                    "Unknown error"
+                )
+            );
+
         }
-    );
+
+    };
+
 }
 
+
+/* =========================================================
+   AFFILIATE LIST
+========================================================= */
+
 function renderAffiliateList() {
+
     if (!affiliateList) {
         return;
     }
 
+
     affiliateList.innerHTML =
         "";
+
 
     const entries =
         Object.entries(
             affiliateLinks
         );
 
+
     if (!entries.length) {
+
         affiliateList.innerHTML = `
             <div class="empty-state">
                 No affiliate tools yet.
@@ -4033,47 +4598,53 @@ function renderAffiliateList() {
         return;
     }
 
+
     const list =
         document.createElement(
             "div"
         );
 
+
     list.className =
         "admin-list";
 
+
     entries.forEach(
         ([toolId, link]) => {
+
             const tool =
-                tools.find(
-                    item =>
-                        String(item.id) ===
-                        String(toolId)
-                );
+                affiliateToolData[
+                    toolId
+                ];
+
 
             if (!tool) {
                 return;
             }
+
 
             const item =
                 document.createElement(
                     "div"
                 );
 
+
             item.className =
                 "admin-list-item";
+
 
             item.innerHTML = `
                 <div class="admin-list-main">
 
                     <div class="admin-list-title">
                         ${escapeHTML(
-                            tool.name
+                            tool.name || ""
                         )}
                     </div>
 
                     <div class="admin-list-meta">
                         ${escapeHTML(
-                            link
+                            link || ""
                         )}
                     </div>
 
@@ -4085,7 +4656,7 @@ function renderAffiliateList() {
                         type="button"
                         class="action-button delete"
                         onclick="removeAffiliate('${escapeAttribute(
-                            tool.id
+                            toolId
                         )}')"
                     >
                         Remove
@@ -4094,121 +4665,303 @@ function renderAffiliateList() {
                 </div>
             `;
 
+
             list.appendChild(
                 item
             );
+
         }
     );
+
 
     affiliateList.appendChild(
         list
     );
+
 }
 
-function removeAffiliate(
+
+/* =========================================================
+   DELETE AFFILIATE
+========================================================= */
+
+async function removeAffiliate(
     toolId
 ) {
-    delete affiliateLinks[
-        toolId
-    ];
 
-    saveData();
-    renderAll();
+    if (!toolId) {
+        return;
+    }
+
+
+    const tool =
+        affiliateToolData[
+            toolId
+        ];
+
+
+    const toolName =
+        tool?.name ||
+        "this tool";
+
+
+    if (
+        !confirm(
+            `Remove affiliate link for "${toolName}"?`
+        )
+    ) {
+        return;
+    }
+
+
+    try {
+
+        const {
+            data: deleted,
+            error: deleteError
+        } = await supabaseClient.rpc(
+            "delete_affiliate_link",
+            {
+                p_tool_id:
+                    toolId
+            }
+        );
+
+
+        if (deleteError) {
+            throw deleteError;
+        }
+
+
+        /* REMOVE FROM MEMORY */
+
+        delete affiliateLinks[
+            toolId
+        ];
+
+
+        delete affiliateToolData[
+            toolId
+        ];
+
+
+        /*
+            Affiliate data is now stored
+            in Supabase only.
+        */
+
+        localStorage.removeItem(
+            "softwez_affiliate"
+        );
+
+
+        renderAffiliateList();
+
+        renderStats();
+
+
+        alert(
+            "Affiliate link removed successfully."
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Affiliate removal error:",
+            error
+        );
+
+
+        alert(
+            "Affiliate link could not be removed.\n\n" +
+            (
+                error?.message ||
+                "Unknown error"
+            )
+        );
+
+    }
+
 }
+
+/* =========================================================
+   AD NETWORK MANAGEMENT
+========================================================= */
+
+
+/* =========================================================
+   SAVE AD NETWORK
+========================================================= */
 
 if (adNetworkForm) {
-    adNetworkForm.addEventListener(
-        "submit",
-        async event => {
-            event.preventDefault();
 
-            const nameInput =
-                document.getElementById(
-                    "adNetworkName"
-                );
+    adNetworkForm.onsubmit = async event => {
 
-            const codeInput =
-                document.getElementById(
-                    "adNetworkCode"
-                );
+        event.preventDefault();
 
-            const name =
-                nameInput
-                    ? nameInput.value.trim()
-                    : "";
 
-            const code =
-                codeInput
-                    ? codeInput.value.trim()
-                    : "";
+        const nameInput =
+            document.getElementById(
+                "adNetworkName"
+            );
 
-            if (!name || !code) {
-                alert(
-                    "Please fill in both fields."
-                );
 
-                return;
-            }
+        const codeInput =
+            document.getElementById(
+                "adNetworkCode"
+            );
 
-            try {
-                const {
-                    data,
-                    error
-                } = await supabaseClient
-                    .from("ad_networks")
-                    .insert([
-                        {
-                            name,
-                            code,
-                            is_active: true
-                        }
-                    ])
-                    .select()
-                    .single();
 
-                if (error) {
-                    throw error;
-                }
+        const name =
+            nameInput
+                ? nameInput.value.trim()
+                : "";
 
-                if (data) {
-                    adNetworks.push(data);
-                }
 
-                renderAll();
+        const code =
+            codeInput
+                ? codeInput.value.trim()
+                : "";
 
-                adNetworkForm.reset();
 
-                alert(
-                    "Ad network saved successfully."
-                );
+        if (!name || !code) {
 
-            } catch (error) {
-                console.error(
-                    "Ad network save error:",
-                    error
-                );
+            alert(
+                "Please fill in both fields."
+            );
 
-                alert(
-                    "Ad network could not be saved.\n\n" +
-                    (
-                        error?.message ||
-                        "Unknown error"
-                    )
-                );
-            }
+            return;
         }
-    );
+
+
+        try {
+
+            const {
+                data,
+                error
+            } = await supabaseClient.rpc(
+                "save_ad_network",
+                {
+                    p_name:
+                        name,
+
+                    p_code:
+                        code
+                }
+            );
+
+
+            if (error) {
+                throw error;
+            }
+
+
+            /* =========================================
+               UPDATE LOCAL MEMORY
+            ========================================= */
+
+            if (data) {
+
+                const savedNetwork =
+                    typeof data === "string"
+                        ? JSON.parse(data)
+                        : data;
+
+
+                /*
+                    Remove an older local copy
+                    if the same ID already exists.
+                */
+
+                adNetworks =
+                    adNetworks.filter(
+                        network =>
+                            String(network.id) !==
+                            String(
+                                savedNetwork.id
+                            )
+                    );
+
+
+                adNetworks.push(
+                    savedNetwork
+                );
+
+            }
+
+
+            /* =========================================
+               REMOVE OLD LOCAL STORAGE DATA
+            ========================================= */
+
+            localStorage.removeItem(
+                "softwez_ad_networks"
+            );
+
+
+            /* =========================================
+               RESET FORM
+            ========================================= */
+
+            adNetworkForm.reset();
+
+
+            /* =========================================
+               REFRESH LIST FROM DATABASE
+            ========================================= */
+
+            await loadAdNetworks();
+
+
+            alert(
+                "Ad network saved successfully."
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "Ad network save error:",
+                error
+            );
+
+
+            alert(
+                "Ad network could not be saved.\n\n" +
+                (
+                    error?.message ||
+                    "Unknown error"
+                )
+            );
+
+        }
+
+    };
+
 }
 
+
+/* =========================================================
+   RENDER AD NETWORKS
+========================================================= */
+
 function renderAdNetworks() {
+
     if (!adNetworkList) {
         return;
     }
 
+
     adNetworkList.innerHTML =
         "";
 
-    if (!adNetworks.length) {
+
+    if (
+        !adNetworks ||
+        !adNetworks.length
+    ) {
+
         adNetworkList.innerHTML = `
             <div class="empty-state">
                 No ad networks added yet.
@@ -4218,40 +4971,52 @@ function renderAdNetworks() {
         return;
     }
 
+
     const list =
         document.createElement(
             "div"
         );
 
+
     list.className =
         "admin-list";
 
+
     adNetworks.forEach(
         network => {
+
+            if (!network) {
+                return;
+            }
+
+
             const item =
                 document.createElement(
                     "div"
                 );
 
+
             item.className =
                 "admin-list-item";
+
 
             item.innerHTML = `
                 <div class="admin-list-main">
 
                     <div class="admin-list-title">
                         ${escapeHTML(
-                            network.name
+                            network.name || ""
                         )}
                     </div>
 
                     <div class="admin-list-meta">
                         ${escapeHTML(
-                            network.code
+                            network.code || ""
                         )}
                     </div>
 
                 </div>
+
 
                 <div class="admin-list-actions">
 
@@ -4268,74 +5033,280 @@ function renderAdNetworks() {
                 </div>
             `;
 
+
             list.appendChild(
                 item
             );
+
         }
     );
+
 
     adNetworkList.appendChild(
         list
     );
+
 }
+
+
+/* =========================================================
+   DELETE AD NETWORK
+========================================================= */
 
 async function deleteAdNetwork(
     id
 ) {
-    if (
-        !confirm(
-            "Delete this ad network?"
-        )
-    ) {
+
+    const network =
+        adNetworks.find(
+            item =>
+                String(item.id) ===
+                String(id)
+        );
+
+
+    if (!network) {
+
+        alert(
+            "Ad network not found."
+        );
+
         return;
     }
 
+
+    const confirmed =
+        confirm(
+            `Delete "${network.name}"?\n\nOnly this ad network will be deleted.`
+        );
+
+
+    if (!confirmed) {
+        return;
+    }
+
+
     try {
+
         const {
+            data,
             error
-        } =
-            await supabaseClient
-                .from("ad_networks")
-                .delete()
-                .eq("id", id);
+        } = await supabaseClient.rpc(
+            "delete_ad_network",
+            {
+                p_id: id
+            }
+        );
+
 
         if (error) {
             throw error;
         }
 
-        adNetworks =
-            adNetworks.filter(
-                network =>
-                    String(network.id) !==
-                    String(id)
-            );
 
-        saveData();
+        /*
+         * IMPORTANT:
+         * Do NOT filter adNetworks manually.
+         * Do NOT call saveData().
+         * Reload the complete list from Supabase.
+         */
 
-        renderAdNetworks();
+        localStorage.removeItem(
+            "softwez_ad_networks"
+        );
+
+
+        await loadAdNetworks();
+
 
         alert(
             "Ad network deleted successfully."
         );
 
+
     } catch (error) {
 
         console.error(
-            "Delete ad network error:",
+            "Ad network delete error:",
             error
         );
 
+
         alert(
-            "Failed to delete ad network.\n\n" +
+            "Ad network could not be deleted.\n\n" +
             (
                 error?.message ||
                 "Unknown error"
             )
         );
+
+    }
+
+}
+/* =========================================================
+   LOAD AD NETWORKS
+========================================================= */
+
+async function loadAdNetworks() {
+
+    try {
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("ad_networks")
+            .select(
+                `
+                id,
+                name,
+                code,
+                is_active,
+                created_at
+                `
+            )
+            .eq(
+                "is_active",
+                true
+            )
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            );
+
+
+        if (error) {
+            throw error;
+        }
+
+
+        /* =========================================
+           DATABASE IS THE SOURCE OF TRUTH
+        ========================================= */
+
+        adNetworks =
+            data || [];
+
+
+        /* =========================================
+           REMOVE OLD LOCAL STORAGE DATA
+        ========================================= */
+
+        localStorage.removeItem(
+            "softwez_ad_networks"
+        );
+
+
+        /* =========================================
+           RENDER
+        ========================================= */
+
+        renderAdNetworks();
+
+
+    } catch (error) {
+
+        console.error(
+            "Ad networks loading error:",
+            error
+        );
+
+
+        adNetworks =
+            [];
+
+
+        renderAdNetworks();
+
+    }
+
+}
+async function loadToolStats() {
+
+    try {
+
+        // TOTAL TOOLS
+        const {
+            count: totalToolsCount,
+            error: toolsCountError
+        } = await supabaseClient
+            .from("tools")
+            .select(
+                "id",
+                {
+                    count: "exact",
+                    head: true
+                }
+            );
+
+
+        if (toolsCountError) {
+            throw toolsCountError;
+        }
+
+
+        toolsTotal =
+            totalToolsCount || 0;
+
+
+        // TOTAL SPONSORED TOOLS
+        const {
+            count: totalSponsoredCount,
+            error: sponsoredCountError
+        } = await supabaseClient
+            .from("tools")
+            .select(
+                "id",
+                {
+                    count: "exact",
+                    head: true
+                }
+            )
+            .eq(
+                "is_sponsored",
+                true
+            );
+
+
+        if (sponsoredCountError) {
+            throw sponsoredCountError;
+        }
+
+
+        sponsoredTotal =
+            totalSponsoredCount || 0;
+
+
+        // UPDATE DASHBOARD
+        renderStats();
+
+
+        console.log(
+            `Tool stats loaded | Total: ${toolsTotal} | Sponsored: ${sponsoredTotal}`
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Tool stats loading error:",
+            error
+        );
+
+
+        toolsTotal = 0;
+
+        sponsoredTotal = 0;
+
+
+        renderStats();
+
     }
 }
-
 function renderStats() {
+
     const totalTools =
         document.getElementById(
             "totalTools"
@@ -4356,32 +5327,40 @@ function renderStats() {
             "totalAffiliate"
         );
 
+
     if (totalTools) {
+
         totalTools.textContent =
-            tools.length;
+            toolsTotal;
+
     }
+
 
     if (totalCategories) {
+
         totalCategories.textContent =
             categories.length;
+
     }
+
 
     if (totalSponsored) {
+
         totalSponsored.textContent =
-            tools.filter(
-                tool =>
-                    Boolean(
-                        tool.is_sponsored
-                    )
-            ).length;
+            sponsoredTotal;
+
     }
 
+
     if (totalAffiliate) {
+
         totalAffiliate.textContent =
             Object.keys(
                 affiliateLinks
             ).length;
+
     }
+
 }
 
 function formatDate(
@@ -4469,20 +5448,23 @@ function escapeAttribute(
 }
 
 function renderAll() {
+
     renderCategorySelect();
+
     renderSubcategoryCategorySelect();
 
-    renderTools(
-        activeSearchQuery
-    );
+    renderTools();
 
     renderCategories();
 
     renderSponsoredToolSelect();
+
     renderSponsoredCampaigns();
+
     renderSponsoredAnalytics();
 
     renderAffiliateToolSelect();
+
     renderAffiliateList();
 
     renderAdNetworks();
@@ -4490,6 +5472,7 @@ function renderAll() {
     renderStats();
 
     renderPendingSubmissions();
+
     updatePendingCounts();
 }
 async function loadAffiliateLinks() {
@@ -4501,31 +5484,34 @@ async function loadAffiliateLinks() {
             error
         } = await supabaseClient
             .from("affiliate_links")
-            .select(
-                "tool_id, affiliate_url, is_active"
-            );
+            .select(`
+                tool_id,
+                affiliate_url,
+                is_active,
+                tools (
+                    id,
+                    name,
+                    category
+                )
+            `);
 
         if (error) {
             throw error;
         }
 
-        const localLinks =
-            JSON.parse(
-                localStorage.getItem(
-                    "softwez_affiliate"
-                ) || "{}"
-            );
 
-        affiliateLinks =
-            Object.keys(localLinks).length
-                ? localLinks
-                : {};
+        affiliateLinks = {};
+
+        affiliateToolData = {};
+
 
         (data || []).forEach(
             item => {
 
                 if (
-                    item.is_active === true
+                    item.is_active === true &&
+                    item.tool_id &&
+                    item.affiliate_url
                 ) {
 
                     affiliateLinks[
@@ -4533,12 +5519,27 @@ async function loadAffiliateLinks() {
                     ] =
                         item.affiliate_url;
 
+
+                    affiliateToolData[
+                        item.tool_id
+                    ] =
+                        item.tools || null;
+
                 }
 
             }
         );
 
+
+        localStorage.removeItem(
+            "softwez_affiliate"
+        );
+
+
         renderAffiliateList();
+
+        renderStats();
+
 
     } catch (error) {
 
@@ -4547,98 +5548,165 @@ async function loadAffiliateLinks() {
             error
         );
 
+        affiliateLinks = {};
+
+        affiliateToolData = {};
+
+        renderAffiliateList();
+
+        renderStats();
+
     }
 
 }
 async function loadToolsFromSupabase() {
     try {
-        const {
-            data,
-            error
-        } =
-            await supabaseClient
-                .from("tools")
-                .select("*")
-                .order(
-                    "created_at",
-                    {
-                        ascending:
-                            false
-                    }
-                );
 
-        if (error) {
-            throw error;
+        const from =
+            toolsPage * TOOLS_PER_PAGE;
+
+        const to =
+            from + TOOLS_PER_PAGE - 1;
+
+
+        let query = supabaseClient
+            .from("tools")
+            .select(
+                `
+                id,
+                name,
+                description,
+                link,
+                category,
+                subcategory,
+                is_sponsored,
+                created_at
+                `,
+                {
+                    count: "exact"
+                }
+            );
+
+
+        // =========================================
+        // SEARCH
+        // =========================================
+
+        const search =
+            String(activeSearchQuery || "")
+                .replace(/[%,()]/g, " ")
+                .replace(/\*/g, " ")
+                .replace(/\s+/g, " ")
+                .trim();
+
+
+        if (search) {
+
+            query = query.or(
+                `name.ilike.%${search}%,description.ilike.%${search}%,category.ilike.%${search}%,subcategory.ilike.%${search}%,link.ilike.%${search}%`
+            );
+
         }
 
-        tools =
-            data || [];
 
-        sponsoredTools =
-            tools
-                .filter(
-                    tool =>
-                        Boolean(
-                            tool.is_sponsored
-                        )
-                )
-                .map(
-                    tool =>
-                        tool.id
-                );
+        // =========================================
+        // LOAD CURRENT PAGE
+        // =========================================
 
-        saveData();
-        renderAll();
-
-        console.log(
-            `Loaded ${tools.length} tools from Supabase.`
-        );
-
-    } catch (error) {
-        console.error(
-            "Supabase tools loading error:",
-            error
-        );
-
-        renderAll();
-    }
-}
-async function loadAdNetworks() {
-    try {
         const {
             data,
-            error
-        } = await supabaseClient
-            .from("ad_networks")
-            .select("*")
-            .eq(
-                "is_active",
-                true
-            )
+            error,
+            count
+        } = await query
             .order(
                 "created_at",
                 {
                     ascending: false
                 }
+            )
+            .range(
+                from,
+                to
             );
+
 
         if (error) {
             throw error;
         }
 
-        adNetworks =
+
+        tools =
             data || [];
 
-        renderAdNetworks();
+        toolsTotal =
+            count || 0;
+
+
+        // =========================================
+        // PAGE SAFETY
+        // =========================================
+
+        const totalPages =
+            Math.max(
+                1,
+                Math.ceil(
+                    toolsTotal /
+                    TOOLS_PER_PAGE
+                )
+            );
+
+
+        if (
+            toolsPage >= totalPages &&
+            toolsPage > 0
+        ) {
+
+            toolsPage =
+                totalPages - 1;
+
+            return await loadToolsFromSupabase();
+
+        }
+
+
+        // =========================================
+        // RENDER
+        // =========================================
+
+        renderAll();
+
+
+        console.log(
+            `Loaded ${tools.length} tools | Page ${toolsPage + 1}/${totalPages} | Total ${toolsTotal}`
+        );
+
 
     } catch (error) {
+
         console.error(
-            "Ad networks loading error:",
+            "Supabase tools loading error:",
             error
         );
 
-        renderAdNetworks();
+
+        tools = [];
+
+        toolsTotal = 0;
+
+
+        renderAll();
+
+
+        alert(
+            "Failed to load tools.\n\n" +
+            (
+                error?.message ||
+                "Unknown error"
+            )
+        );
+
     }
+
 }
 hideToolForm();
 
@@ -4647,6 +5715,7 @@ loadCategories();
 renderAll();
 
 loadToolsFromSupabase();
+loadToolStats();
 loadAdNetworks();
 loadAffiliateLinks();
 loadPendingSubmissions();
@@ -4669,7 +5738,7 @@ if (logoutBtn) {
 
                 await supabaseClient.auth.signOut();
 
-            } catch (error) {
+                        } catch (error) {
 
                 console.error(
                     "Logout error:",

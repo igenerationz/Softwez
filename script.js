@@ -2081,199 +2081,17 @@ setTimeout(() => {
 
 }, 3000);
 /* =====================================================
-   REMOVE EMPTY / UNFILLED AD NETWORK SLOTS
+   AD NETWORK SLOT CLEANUP
 ===================================================== */
 
-setTimeout(() => {
+/*
+   Generic ad networks may load asynchronously.
 
-    resourceList
-        .querySelectorAll(
-            ".ad-network-resource"
-        )
-        .forEach(
-            adContainer => {
+   Do not automatically remove ad slots based on
+   timeout, iframe, text, image, canvas, or height.
 
-                const adContent =
-                    adContainer.querySelector(
-                        ".ad-network-content"
-                    );
-
-
-                if (!adContent) {
-
-                    adContainer.remove();
-
-                    return;
-
-                }
-
-
-                /* =========================================
-                   GOOGLE ADSENSE — UNFILLED
-                ========================================== */
-
-                const unfilled =
-                    adContent.querySelector(
-                        "[data-ad-status='unfilled']"
-                    );
-
-
-                if (unfilled) {
-
-                    adContainer.remove();
-
-                    return;
-
-                }
-
-
-                /* =========================================
-                   TEXT CONTENT
-                ========================================== */
-
-                if (
-                    adContent.textContent
-                        .trim()
-                        .length > 0
-                ) {
-
-                    return;
-
-                }
-
-
-                /* =========================================
-                   REAL MEDIA CONTENT
-                ========================================== */
-
-                const images =
-                    adContent.querySelectorAll(
-                        "img"
-                    );
-
-                const videos =
-                    adContent.querySelectorAll(
-                        "video"
-                    );
-
-                const canvases =
-                    adContent.querySelectorAll(
-                        "canvas"
-                    );
-
-                const svgs =
-                    adContent.querySelectorAll(
-                        "svg"
-                    );
-
-                const objects =
-                    adContent.querySelectorAll(
-                        "object"
-                    );
-
-                const embeds =
-                    adContent.querySelectorAll(
-                        "embed"
-                    );
-
-
-                /* =========================================
-                   CHECK VISIBLE ELEMENTS
-                ========================================== */
-
-                const hasVisibleMedia =
-                    [
-                        ...images,
-                        ...videos,
-                        ...canvases,
-                        ...svgs,
-                        ...objects,
-                        ...embeds
-                    ].some(
-                        element => {
-
-                            const rect =
-                                element.getBoundingClientRect();
-
-                            return (
-                                rect.width > 1 &&
-                                rect.height > 1
-                            );
-
-                        }
-                    );
-
-
-                if (hasVisibleMedia) {
-
-                    return;
-
-                }
-
-
-                /* =========================================
-                   IFRAME CHECK
-                ========================================== */
-
-                const iframes =
-                    adContent.querySelectorAll(
-                        "iframe"
-                    );
-
-
-                const hasVisibleIframe =
-                    Array.from(
-                        iframes
-                    ).some(
-                        iframe => {
-
-                            const rect =
-                                iframe.getBoundingClientRect();
-
-                            return (
-                                rect.width > 1 &&
-                                rect.height > 1
-                            );
-
-                        }
-                    );
-
-
-                /*
-                    IMPORTANT:
-
-                    A blank iframe can exist even when
-                    the ad network returned no ad.
-
-                    Therefore an iframe alone is NOT
-                    considered proof of a filled ad.
-                */
-
-                if (!hasVisibleIframe) {
-
-                    adContainer.remove();
-
-                    return;
-
-                }
-
-
-                /* =========================================
-                   FALLBACK
-                ========================================== */
-
-                if (
-                    adContent.children.length === 0
-                ) {
-
-                    adContainer.remove();
-
-                }
-
-            }
-        );
-
-}, 8000);
+   The ad network controls when the ad is rendered.
+*/
     /* =====================================================
        TRACK IMPRESSIONS
     ====================================================== */
@@ -2644,6 +2462,7 @@ async function checkSubmissionUrl() {
     const url =
         submitUrl.value.trim();
 
+
     if (!url) {
 
         showUrlCheckMessage(
@@ -2652,7 +2471,6 @@ async function checkSubmissionUrl() {
         );
 
         return;
-
     }
 
 
@@ -2661,13 +2479,16 @@ async function checkSubmissionUrl() {
     checkUrlButton.textContent =
         "Checking...";
 
+
     submissionUrlApproved = false;
 
     checkedSubmissionDomain = null;
 
+
     submissionDetails.classList.add(
         "disabled"
     );
+
 
     submitName.disabled = true;
 
@@ -2675,78 +2496,84 @@ async function checkSubmissionUrl() {
 
     submitCategory.disabled = true;
 
+    submitSubcategory.disabled = true;
+
     submitResourceButton.disabled = true;
 
 
     try {
 
+        /* =================================================
+           VALIDATE URL
+        ================================================= */
+
+        let normalizedDomain = "";
+
+        try {
+
+            normalizedDomain =
+                new URL(url)
+                    .hostname
+                    .replace(/^www\./, "")
+                    .toLowerCase();
+
+        } catch (error) {
+
+            showUrlCheckMessage(
+                "Please enter a valid website URL.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        /* =================================================
+           CHECK EXISTING TOOL
+        ================================================= */
+
         const {
-    data,
-    error
-} = await supabaseClient
-    .from("tools")
-    .select("id, link")
-    .eq("link", url)
-    .limit(1);
-
-if (error) {
-    throw error;
-}
-
-if (data && data.length > 0) {
-
-    showUrlCheckMessage(
-        "This URL is already available on Softwez.",
-        "error"
-    );
-
-    checkUrlButton.disabled = false;
-
-    checkUrlButton.textContent =
-        "Check URL";
-
-    return;
-}
+            data,
+            error
+        } = await supabaseClient
+            .from("tools")
+            .select("id, link")
+            .eq("link", url)
+            .limit(1);
 
 
-/* URL is not already available on Softwez */
-
-submissionUrlApproved = true;
-
-try {
-    checkedSubmissionDomain =
-        new URL(url).hostname
-            .replace(/^www\./, "");
-} catch {
-    checkedSubmissionDomain = "";
-}
+        if (error) {
+            throw error;
+        }
 
 
-showUrlCheckMessage(
-    "✓ URL is available for submission.",
-    "success"
-);
+        /* =================================================
+           ALREADY EXISTS
+        ================================================= */
+
+        if (
+            data &&
+            data.length > 0
+        ) {
+
+            showUrlCheckMessage(
+                "This URL is already available on Softwez.",
+                "error"
+            );
+
+            return;
+        }
 
 
-submissionDetails.classList.remove(
-    "disabled"
-);
-
-submitName.disabled = false;
-
-submitDescription.disabled = false;
-
-submitCategory.disabled = false;
-
-submitResourceButton.disabled = false;
-
-checkUrlButton.disabled = false;
-
-checkUrlButton.textContent =
-    "Checked";
+        /* =================================================
+           URL APPROVED
+        ================================================= */
 
         checkedSubmissionDomain =
-            data.normalized_domain;
+            normalizedDomain;
+
+        submissionUrlApproved =
+            true;
 
 
         showUrlCheckMessage(
@@ -2759,15 +2586,23 @@ checkUrlButton.textContent =
             "disabled"
         );
 
-        submitName.disabled = false;
 
-        submitDescription.disabled = false;
+        submitName.disabled =
+            false;
 
-        submitCategory.disabled = false;
+        submitDescription.disabled =
+            false;
 
-        submitResourceButton.disabled = false;
+        submitCategory.disabled =
+            false;
 
-        checkUrlButton.disabled = false;
+        submitSubcategory.disabled =
+            false;
+
+
+        submitResourceButton.disabled =
+            false;
+
 
         checkUrlButton.textContent =
             "Checked";
@@ -2781,22 +2616,27 @@ checkUrlButton.textContent =
         );
 
 
+        submissionUrlApproved =
+            false;
+
+        checkedSubmissionDomain =
+            null;
+
+
         showUrlCheckMessage(
             "Unable to check this URL right now. Please try again.",
             "error"
         );
 
 
-        checkUrlButton.disabled = false;
+    } finally {
 
-        checkUrlButton.textContent =
-            "Check URL";
+        checkUrlButton.disabled =
+            false;
 
     }
 
 }
-
-
 /* =========================================================
    URL CHECK BUTTON
 ========================================================= */
@@ -2877,6 +2717,10 @@ submitResourceForm.addEventListener(
         event.preventDefault();
 
 
+        /* =====================================================
+           VALIDATION
+        ===================================================== */
+
         if (!submissionUrlApproved) {
 
             showUrlCheckMessage(
@@ -2885,7 +2729,6 @@ submitResourceForm.addEventListener(
             );
 
             return;
-
         }
 
 
@@ -2899,7 +2742,10 @@ submitResourceForm.addEventListener(
             submitCategory.value;
 
         const subcategory =
-             submitSubcategory.value;
+            submitSubcategory.value;
+
+        const url =
+            submitUrl.value.trim();
 
 
         if (!name) {
@@ -2907,7 +2753,6 @@ submitResourceForm.addEventListener(
             submitName.focus();
 
             return;
-
         }
 
 
@@ -2916,7 +2761,6 @@ submitResourceForm.addEventListener(
             submitDescription.focus();
 
             return;
-
         }
 
 
@@ -2925,23 +2769,36 @@ submitResourceForm.addEventListener(
             submitCategory.focus();
 
             return;
-
         }
+
 
         if (!subcategory) {
 
             submitSubcategory.focus();
 
             return;
+        }
 
-}
 
+        if (!checkedSubmissionDomain) {
+
+            showUrlCheckMessage(
+                "Please check and verify your website URL first.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        /* =====================================================
+           SUBMITTING STATE
+        ===================================================== */
 
         submitResourceButton.disabled = true;
 
         submitResourceButton.textContent =
             "Submitting...";
-
 
         submitResult.textContent = "";
 
@@ -2949,35 +2806,103 @@ submitResourceForm.addEventListener(
             "submit-result";
 
 
+        /* =====================================================
+           SUBMIT
+        ===================================================== */
+
         try {
 
             const {
+                data,
                 error
-            } = await supabaseClient
-                .from("tool_submissions")
-                .insert([
+            } =
+                await supabaseClient.functions.invoke(
+                    "submit-tool",
                     {
-                        name: name,
-                        description: description,
-                        url: submitUrl.value.trim(),
-                        normalized_domain:
-    new URL(
-        submitUrl.value.trim()
-    ).hostname.replace(
-        /^www\./,
-        ""
-    ),
-                        category: category,
-                        subcategory: subcategory,
-                        status: "pending"
+                        body: {
+                            name: name,
+                            description: description,
+                            url: url,
+                            normalized_domain:
+                                checkedSubmissionDomain,
+                            category: category,
+                            subcategory:
+                                subcategory
+                        }
                     }
-                ]);
+                );
 
+
+            /* =================================================
+               FUNCTION ERROR
+            ================================================= */
 
             if (error) {
-                throw error;
+
+                let errorMessage =
+                    "Unable to submit this resource right now. Please try again.";
+
+
+                try {
+
+                    if (
+                        error.context &&
+                        typeof error.context.json ===
+                            "function"
+                    ) {
+
+                        const responseData =
+                            await error.context.json();
+
+
+                        if (
+                            responseData &&
+                            responseData.error
+                        ) {
+
+                            errorMessage =
+                                responseData.error;
+
+                        }
+
+                    }
+
+                } catch (
+                    responseError
+                ) {
+
+                    console.error(
+                        "Submission error response parsing failed:",
+                        responseError
+                    );
+
+                }
+
+
+                throw new Error(
+                    errorMessage
+                );
             }
 
+
+            /* =================================================
+               INVALID FUNCTION RESPONSE
+            ================================================= */
+
+            if (
+                !data ||
+                data.success !== true
+            ) {
+
+                throw new Error(
+                    "Unable to submit this resource right now. Please try again."
+                );
+            }
+
+
+            /* =================================================
+               SUCCESS
+            ================================================= */
 
             submitResult.textContent =
                 "✓ Submitted successfully. Your resource is now pending review by the Softwez team.";
@@ -2988,27 +2913,48 @@ submitResourceForm.addEventListener(
 
             submitResourceForm.reset();
 
-            submissionUrlApproved = false;
 
-            checkedSubmissionDomain = null;
+            submissionUrlApproved =
+                false;
+
+            checkedSubmissionDomain =
+                null;
 
 
             submissionDetails.classList.add(
                 "disabled"
             );
 
-            submitName.disabled = true;
 
-            submitDescription.disabled = true;
+            submitName.disabled =
+                true;
 
-            submitCategory.disabled = true;
+            submitDescription.disabled =
+                true;
 
-            submitSubcategory.disabled = true;
+            submitCategory.disabled =
+                true;
 
-            submitResourceButton.disabled = true;
+            submitSubcategory.disabled =
+                true;
+
+
+            submitResourceButton.disabled =
+                true;
+
 
             checkUrlButton.textContent =
                 "Check URL";
+
+
+            /* =================================================
+               RESET URL STATE
+            ================================================= */
+
+            showUrlCheckMessage(
+                "",
+                ""
+            );
 
 
         } catch (error) {
@@ -3020,7 +2966,9 @@ submitResourceForm.addEventListener(
 
 
             submitResult.textContent =
+                error?.message ||
                 "Unable to submit this resource right now. Please try again.";
+
 
             submitResult.className =
                 "submit-result show error";
@@ -3038,7 +2986,6 @@ submitResourceForm.addEventListener(
 
     }
 );
-
 /* =========================================================
    CLOSE EVENTS
 ========================================================= */
@@ -3094,6 +3041,15 @@ async function loadResources() {
         }
 
 
+        /*
+           Supabase is the single source of truth.
+
+           Clear any hardcoded/stale resource data
+           before applying the latest database result.
+        */
+        resources = [];
+
+
         if (data && data.length > 0) {
 
             resources = data.map(tool => {
@@ -3117,8 +3073,9 @@ async function loadResources() {
 
                     name:
                         tool.name || "",
+
                     id:
-                       tool.id,
+                        tool.id,
 
                     domain,
 
@@ -3162,10 +3119,13 @@ async function loadResources() {
 
 
         /*
-           If Supabase fails,
-           existing local resource data
-           will remain available.
+           Never show stale hardcoded resources
+           when Supabase fails.
+
+           The database is the source of truth.
         */
+        resources = [];
+
 
         renderCategories();
 
@@ -3174,7 +3134,6 @@ async function loadResources() {
     }
 
 }
-
 
 /* =========================================================
    INITIALIZE
