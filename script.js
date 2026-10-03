@@ -849,7 +849,22 @@ function renderCategories() {
        MAIN CATEGORIES
     ====================================================== */
 
-    Object.keys(categoryData).forEach(category => {
+    Object.keys(categoryData)
+    .sort((a, b) => {
+
+        const orderA =
+            Number(
+                categoryData[a]._sort_order ?? 999999
+            );
+
+        const orderB =
+            Number(
+                categoryData[b]._sort_order ?? 999999
+            );
+
+        return orderA - orderB;
+    })
+    .forEach(category => {
 
         const isActive =
             activeCategory === category;
@@ -3141,47 +3156,105 @@ async function loadResources() {
 
 async function loadCategories() {
 
-    const { data, error } = await supabaseClient
+    const {
+        data,
+        error
+    } = await supabaseClient
         .from("categories")
         .select(`
             id,
             name,
+            sort_order,
             subcategories (
                 id,
                 name
             )
         `)
-        .order("name");
+        .order(
+            "sort_order",
+            {
+                ascending: true,
+                nullsFirst: false
+            }
+        );
 
     if (error) {
-        console.error("Category loading error:", error);
+
+        console.error(
+            "Category loading error:",
+            error
+        );
+
         return;
     }
 
     categoryData = {};
 
-    data.forEach(category => {
+    const orderedCategories =
+        (data || [])
+            .slice()
+            .sort((a, b) => {
 
-        categoryData[category.name] =
-            (category.subcategories || [])
-                .map(item => item.name);
+                const orderA =
+                    Number(
+                        a.sort_order ?? 999999
+                    );
 
-    });
+                const orderB =
+                    Number(
+                        b.sort_order ?? 999999
+                    );
+
+                return orderA - orderB;
+            });
+
+
+    orderedCategories.forEach(
+        category => {
+
+            const subcategoryNames =
+                (
+                    category.subcategories ||
+                    []
+                ).map(
+                    item => item.name
+                );
+
+            /*
+                IMPORTANT:
+
+                Store the database sort_order
+                directly on the subcategory array.
+
+                renderCategories() uses this
+                value to determine homepage order.
+            */
+            subcategoryNames._sort_order =
+                Number(
+                    category.sort_order ?? 999999
+                );
+
+
+            categoryData[
+                category.name
+            ] =
+                subcategoryNames;
+        }
+    );
+
 
     renderCategories();
 }
 
 (async () => {
 
-    await loadCategories();
-
-    await loadAffiliateLinks();
-
-    await loadSponsoredCampaigns();
-
-    await loadAdNetworks();
-
-    await loadResources();
+    await Promise.all([
+        loadCategories(),
+        loadAffiliateLinks(),
+        loadSponsoredCampaigns(),
+        loadAdNetworks(),
+        loadResources()
+    ]);
 
 })();
 /* =========================================================

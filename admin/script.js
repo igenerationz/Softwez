@@ -3601,12 +3601,12 @@ async function loadCategories() {
                 .from("categories")
                 .select("*")
                 .order(
-                    "name",
-                    {
-                        ascending:
-                            true
-                    }
-                );
+    "sort_order",
+    {
+        ascending:
+            true
+    }
+);
 
         if (error) {
             throw error;
@@ -3865,16 +3865,16 @@ if (subcategoryForm) {
 }
 
 function renderCategories() {
+
     if (!categoryAdminList) {
         return;
     }
 
-    categoryAdminList.innerHTML =
-        "";
+    categoryAdminList.innerHTML = "";
 
     if (!categories.length) {
-        categoryAdminList.innerHTML =
-            `
+
+        categoryAdminList.innerHTML = `
             <div class="empty-state">
                 No categories found.
             </div>
@@ -3884,7 +3884,8 @@ function renderCategories() {
     }
 
     categories.forEach(
-        category => {
+        (category, index) => {
+
             const children =
                 subcategories.filter(
                     item =>
@@ -3904,56 +3905,78 @@ function renderCategories() {
             wrapper.className =
                 "category-admin-item";
 
+            wrapper.draggable = true;
+
+            wrapper.dataset.categoryId =
+                category.id;
+
             const subcategoryHTML =
                 children.length
                     ? children
                         .map(
                             item =>
                                 `
-            <div class="subcategory-admin-item">
-                <span>
-                    ${escapeHTML(
-                        item.name
-                    )}
-                </span>
+                <div class="subcategory-admin-item">
 
-                <button
-                    type="button"
-                    class="action-button delete"
-                    onclick="deleteSubcategory('${escapeAttribute(
-                        item.id
-                    )}')"
-                >
-                    Delete
-                </button>
-            </div>
-                            `
+                    <span>
+                        ${escapeHTML(
+                            item.name
+                        )}
+                    </span>
+
+                    <button
+                        type="button"
+                        class="action-button delete"
+                        onclick="deleteSubcategory('${escapeAttribute(
+                            item.id
+                        )}')"
+                    >
+                        Delete
+                    </button>
+
+                </div>
+                                `
                         )
                         .join("")
                     : `
-            <div class="subcategory-empty">
-                No subcategories
-            </div>
+                <div class="subcategory-empty">
+                    No subcategories
+                </div>
                     `;
 
             wrapper.innerHTML = `
                 <div class="category-admin-header">
-                    <div>
-                        <strong>
-                            ${escapeHTML(
-                                category.name
-                            )}
-                        </strong>
 
-                        <small>
-                            ${children.length}
-                            ${
-                                children.length ===
-                                1
-                                    ? "subcategory"
-                                    : "subcategories"
-                            }
-                        </small>
+                    <div class="category-admin-main">
+
+                        <span
+                            class="category-drag-handle"
+                            title="Drag to reorder"
+                            aria-hidden="true"
+                        >
+                            ⋮⋮
+                        </span>
+
+                        <div>
+
+                            <strong>
+                                ${escapeHTML(
+                                    category.name
+                                )}
+                            </strong>
+
+                            <small>
+                                ${children.length}
+                                ${
+                                    children.length ===
+                                    1
+                                        ? "subcategory"
+                                        : "subcategories"
+                                }
+                            </small>
+
+                        </div>
+
                     </div>
 
                     <button
@@ -3965,6 +3988,7 @@ function renderCategories() {
                     >
                         Delete Category
                     </button>
+
                 </div>
 
                 <div class="subcategory-admin-list">
@@ -3972,11 +3996,286 @@ function renderCategories() {
                 </div>
             `;
 
+            /* =====================================================
+               DRAG START
+            ===================================================== */
+
+            wrapper.addEventListener(
+                "dragstart",
+                event => {
+
+                    wrapper.classList.add(
+                        "category-dragging"
+                    );
+
+                    event.dataTransfer.effectAllowed =
+                        "move";
+
+                    event.dataTransfer.setData(
+                        "text/plain",
+                        String(category.id)
+                    );
+                }
+            );
+
+
+            /* =====================================================
+               DRAG END
+            ===================================================== */
+
+            wrapper.addEventListener(
+                "dragend",
+                () => {
+
+                    wrapper.classList.remove(
+                        "category-dragging"
+                    );
+
+                    document
+                        .querySelectorAll(
+                            ".category-drag-over"
+                        )
+                        .forEach(
+                            element => {
+                                element.classList.remove(
+                                    "category-drag-over"
+                                );
+                            }
+                        );
+                }
+            );
+
+
+            /* =====================================================
+               DRAG OVER
+            ===================================================== */
+
+            wrapper.addEventListener(
+                "dragover",
+                event => {
+
+                    event.preventDefault();
+
+                    event.dataTransfer.dropEffect =
+                        "move";
+
+                    if (
+                        wrapper.classList.contains(
+                            "category-dragging"
+                        )
+                    ) {
+                        return;
+                    }
+
+                    document
+                        .querySelectorAll(
+                            ".category-drag-over"
+                        )
+                        .forEach(
+                            element => {
+                                if (
+                                    element !==
+                                    wrapper
+                                ) {
+                                    element.classList.remove(
+                                        "category-drag-over"
+                                    );
+                                }
+                            }
+                        );
+
+                    wrapper.classList.add(
+                        "category-drag-over"
+                    );
+                }
+            );
+
+
+            /* =====================================================
+               DRAG LEAVE
+            ===================================================== */
+
+            wrapper.addEventListener(
+                "dragleave",
+                event => {
+
+                    if (
+                        !wrapper.contains(
+                            event.relatedTarget
+                        )
+                    ) {
+                        wrapper.classList.remove(
+                            "category-drag-over"
+                        );
+                    }
+                }
+            );
+
+
+            /* =====================================================
+               DROP
+            ===================================================== */
+
+            wrapper.addEventListener(
+                "drop",
+                async event => {
+
+                    event.preventDefault();
+
+                    wrapper.classList.remove(
+                        "category-drag-over"
+                    );
+
+                    const draggedId =
+                        event.dataTransfer.getData(
+                            "text/plain"
+                        );
+
+                    const targetId =
+                        String(
+                            category.id
+                        );
+
+                    if (
+                        !draggedId ||
+                        draggedId === targetId
+                    ) {
+                        return;
+                    }
+
+                    const draggedIndex =
+                        categories.findIndex(
+                            item =>
+                                String(
+                                    item.id
+                                ) ===
+                                String(
+                                    draggedId
+                                )
+                        );
+
+                    const targetIndex =
+                        categories.findIndex(
+                            item =>
+                                String(
+                                    item.id
+                                ) ===
+                                targetId
+                        );
+
+                    if (
+                        draggedIndex === -1 ||
+                        targetIndex === -1
+                    ) {
+                        return;
+                    }
+
+                    const [
+                        draggedCategory
+                    ] =
+                        categories.splice(
+                            draggedIndex,
+                            1
+                        );
+
+                    let newTargetIndex =
+                        targetIndex;
+
+                    if (
+                        draggedIndex <
+                        targetIndex
+                    ) {
+                        newTargetIndex--;
+                    }
+
+                    categories.splice(
+                        newTargetIndex,
+                        0,
+                        draggedCategory
+                    );
+
+                    /* Re-render immediately */
+
+                    renderCategories();
+
+                    /* Save new order */
+
+                    await saveCategoryOrder();
+                }
+            );
+
             categoryAdminList.appendChild(
                 wrapper
             );
         }
     );
+}
+
+
+/* =========================================================
+   SAVE CATEGORY ORDER
+========================================================= */
+
+async function saveCategoryOrder() {
+
+    try {
+
+        const updates =
+            categories.map(
+                (
+                    category,
+                    index
+                ) => {
+
+                    return supabaseClient
+                        .from(
+                            "categories"
+                        )
+                        .update({
+                            sort_order:
+                                index + 1
+                        })
+                        .eq(
+                            "id",
+                            category.id
+                        );
+                }
+            );
+
+        const results =
+            await Promise.all(
+                updates
+            );
+
+        const failed =
+            results.find(
+                result =>
+                    result.error
+            );
+
+        if (failed) {
+            throw failed.error;
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Save category order error:",
+            error
+        );
+
+        alert(
+            "Failed to save category order.\n\n" +
+            (
+                error?.message ||
+                "Unknown error"
+            )
+        );
+
+        /* Reload original database order */
+
+        await loadCategories();
+    }
 }
 
 async function deleteSubcategory(id) {
